@@ -1,0 +1,111 @@
+
+[
+{ 
+    "id" : "MalfunctionDisplay",
+    "1" : "{{use('malfunction')}} {{use('changes')}} {{use('Repairs')}} {{use('RepairsCrits')}} {{use('RepairsFailure')}}"
+},
+{ 
+    "id" : "malfunction",
+    "1" : "Comm gear: {{use('commProblems')}}",
+    "2" : "Engineering problem: {{use('engProblems')}}",
+    "3" : "Interior fixtures: {{use('fixtureProblems')}}",
+    "4" : "Fuel system: {{use('fuelProblems')}}",
+    "5" : "Problem on the bridge: {{use('bridgeProblems')}}",
+    "6" : "Weapons or Armor: {{use('weaponsProblems')}}"
+},
+{ 
+    "id" : "Repairs",
+    "1-12" : "Easy (BITS Task) to fix.",
+    "13-21" : "Average (BITS Task) to fix.",
+    "22-27" : "Difficult (BITS Task) to fix.",
+    "28-30" : "Formidable (BITS Task) to fix.",
+    "31-32" : "Staggering (BITS Task) to fix.",
+    "33" : "Impossible (BITS Task) to fix.",
+    "34" : "Hopeless (BITS Task) to fix."
+},
+{ 
+    "id" : "RepairsCrits",
+    "1-10": "",
+    "11" : "A critical failure makes it twice as bad.",
+    "12" : "A critical failure means you can not fix it later.",
+    "13" : "A critical failure makes something else break.",
+    "14" : "A critical failure injures the person doing the repair.",
+    "15" : "A critical failure causes injury to someone not working on the repair!"
+},
+{ 
+    "id" : "RepairsFailure",
+    "1-20": "",
+    "21" : "After the repair, roll d6.  On a 6 {{use('repairsFailureResult')}}."
+},
+{ 
+    "id" : "repairsFailureResult",
+    "1" : "a new failure occures",
+    "2" : "the failure reoccures a few minutes (or hours) later",
+    "3" : "the person doing the repair hurts themselves in some minor (but embarassing?) way."
+},
+{ 
+    "id" : "changes",
+    "1-10" : "",
+    "11" : "Ignore it and it will slowly get worse.",
+    "12" : "If not fixed, it will quickly deteriorate.",
+    "13" : "If not fixed, something else will also break."
+},
+{ 
+    "id" : "commProblems",
+    "1" : "All voices sound strange (high, low, etc.)",
+    "2" : "Tagging data is all wrong; looks like your ship is faking its communications.",
+    "3" : "Comm system fails enirely sometimes, but only for {{use('2d4')}} minutes.",
+    "4" : "Comm system makes a very loud noise, but only occationally",
+    "5" : "when communicating on shared military/civilan bands, {{use('symptom')}}"
+},
+{
+    "id" : "engProblems",
+    "1" : "Can not maneuver.",
+    "2" : "Can not jump.",
+    "3" : "No power.",
+    "4" : "No lifesupport",
+    "5" : "No gravity.",
+    "6" : "Environmental problems."
+},
+{ 
+    "id" : "fixtureProblems",
+    "1" : "Ladder is broken.",
+    "2" : "Bed or chair collapses or can not be adjusted properly.",
+    "3" : "Running lights does not work or are blinking.",
+    "4" : "Landing gear does not work.",
+    "5" : "Slow atmophere leak.",
+    "6" : "One fresher doesn't work.",
+    "7" : "Problems in sick bay.",
+    "8" : "Problems cooking food.",
+    "9" : "Door or bulkhead is stuck",
+    "10": "Interior lights don't work (GM decides where).",
+    "11": "Bad smell somewhere on board."
+},
+{ 
+    "id" : "bridgeProblems",
+    "1" : "Screen fails or looks bad.",
+    "2" : "Leak (oil, water, A/C, etc.)",
+    "3" : "Bulkhead does not close all the way or will not lock.",
+    "4" : "Strange vibration can be felt.  Makes people nervious.",
+    "5" : "Entire command and control system fails for just a second."
+},
+{ 
+    "id" : "weaponsProblems",
+    "1" : "Can not fire one weapons system.",
+    "2" : "Can not turn on one weapons system.",
+    "3" : "One weapons system is giving false warnings or errors.",
+    "4" : "One weapons system is locking or tracking things it should not.",
+    "5" : "Firing one system causes a {{use('symptom')}}"
+},
+{ 
+    "id" : "fuelProblems",
+    "1" : "Small fuel leak, but it is into the crew part of the ship.",
+    "2" : "Fuel leak goes to the outside."
+},
+{
+    "id" : "symptom",
+    "1" : "power surge",
+    "2" : "loss of power in another part of the ship",
+    "3" : "bad smells in engineering"
+}
+]

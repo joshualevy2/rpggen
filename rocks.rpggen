@@ -1,0 +1,63 @@
+
+[
+{
+    "id" : "rock",
+    "text" : "rocks.tmpl"
+},
+{ 
+    "id" : "size",
+    "1" : "Large",
+    "2" : "Medium",
+    "3" : "Small",
+    "4" : "Tiny"
+},
+{ 
+    "id" : "material",
+    "1" : "rock.",
+    "2" : "boulders.",
+    "3" : "rock with some dust.",
+    "4" : "boulders with some dust.",
+    "5" : "rock core with ice and dust on the outside."
+},
+{
+    "id" : "extra",
+    "1-8" : "",
+    "9" : "Odd shape: Barbell, animal, simple molecule, etc.",
+    "10" : "Cloud of something around the planetoid: gas, sand, etc.",
+    "11" : "Unusual crack or fissure.",
+    "12" : "Tumbling wildly.",
+    "13" : "Two planetoids in close formation.",
+    "14" : "Group of planetoids travelling together."
+},
+{ 
+    "id" : "interest",
+    "1" : "Very recent impact crater: {{use('craterOrigin')}}",
+    "2" : "Odd sensor reading suggest {{use('buried')}} buried in the planetoid.",
+    "3" : "Spaceship wreckage can be detected.",
+    "4" : "Bright reflections on the surface."
+},
+{ 
+    "id" : "craterOrigin",
+    "1" : "Another outer system rock.",
+    "2" : "Inner system rock, very unusual this far out.",
+    "3" : "Smear of gasses."
+},
+{ 
+    "id" : "buried",
+    "1" : "old equipment",
+    "2" : "ancient artifacts",
+    "3" : "unusual ores",
+    "4" : "weird life forms",
+    "5" : "organic chemicals",
+    "6" : "strange particles",
+    "7" : "strange liquid, gel, or ooze"
+},
+{
+    "id" : "approach",
+    "1" : "Sensors mostly work, but every now and then there is an obvious glitch.",
+    "2" : "Sensors go down entirely.",
+    "3" : "Sensors detect a small rock on a fast collision course with the ship.",
+    "4" : "Sensors detect something odd (described below), but then later decide there is nothing there.",
+    "5" : "Characters notice something that is not on their sensors (by seeing it, feeling hit the ship, etc.)"  
+}
+]

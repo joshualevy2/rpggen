@@ -1,0 +1,28 @@
+
+[
+{ 
+    "id" : "EyeColors",
+    "1-2" : "Brown",
+    "3" : "Green",
+    "4" : "Blue"
+},
+{ 
+    "id" : "EyeColors2",
+    "name": "Human Eye Colors",
+    "description": "A list of eye colors that humans have.",
+    "roll": "1d4",
+    "1" : "Brown",
+    "2" : "Black",
+    "3-4" : "Blue"
+},
+{ 
+    "id" : "EyeColors3",
+    "1-4" : "Brown"
+},
+{ 
+    "id" : "EyeColors4",
+    "1" : "Brown",
+    "2-3" : "Green",
+    "4" : "Blue"
+}
+]

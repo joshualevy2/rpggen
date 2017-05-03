@@ -1,0 +1,178 @@
+
+import json, re, random, sys, string
+from bottle import SimpleTemplate
+
+def use(arg) :
+    return Rpggen.finduse(arg)
+
+class Row :
+    start = -1
+    stop = -1
+    result = ""
+
+class Rpggen :
+    raw = {}
+    tables = {}
+    templates = {}
+    keywords = {}
+    dice = {}
+    testData = None
+
+    def type_notused(obj) :
+        if "text" in d :
+            return 'template'
+        else :
+            return 'table'
+
+    def use(obj) :
+        #print(obj)
+        if isinstance(obj,"".__class__) :
+            #print("roll: "+obj)
+            return str(Rpggen.roll(obj))
+        elif obj['_type'] == 'dice' :
+            #print("dice: "+obj['roll'])
+            return str(Rpggen.roll(obj['roll']))
+        elif obj['_type'] == 'template' or 'text' in obj :
+           template = SimpleTemplate(obj['text'])
+           return template.render(use=use,rpggen=Rpggen)
+        elif obj['_type'] == 'table' or ('roll' in obj and 'rows' in obj) :
+           roll = Rpggen.roll(obj['roll'])
+           for row in obj['rows'] :
+              if roll >= row.start and roll <= row.stop :
+                  if row.result != "" :
+                      template = SimpleTemplate(row.result)
+                      finalResult = template.render(use=use,rpggen=Rpggen)
+                      #print("From {0} raw result {1}, final result {2}".format(obj['id'],row.result,finalResult))
+                      return finalResult
+                  else :
+                      return ""
+           return "Typo in table! Rolled a "+roll+" but no row for that: "+str(obj['rows'])
+        else :
+           return 'ERROR: wrong object type'
+
+    def finduse(name):
+        #print("finduse: "+name)
+        for d in Rpggen.raw :
+            if d['id'] == name :
+               return Rpggen.use(d)
+        try :
+           re.split(r'[d\+\-]',name)
+           return str(Rpggen.roll(name))
+        except:
+           print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+        return ""
+
+
+    def load(filename) :
+      startnum = re.compile(r"^[0123456789]+")
+      diceRE = re.compile(r"^[0123456789]*d[0123456789]+")
+      Rpggen.raw = json.load(open(filename, 'r'))
+      for d in Rpggen.raw :
+        if "text" in d :
+            #print("loaded template: "+d['id'])
+            d['_type'] = 'template'
+            if re.search(r'.tmpl$',d['text']) :
+                with open(d['text'],'r') as template_file :
+                    d['text'] = template_file.read()
+            Rpggen.templates[d['id']] = d
+        if len(d) == 1 :
+            for k in d :    # there is only one
+                id = k
+            d['id'] = id
+            if isinstance(d[k], str) :
+                if diceRE.search(d[k]) :
+                    d['_type'] = 'dice'
+                    d['roll'] = d[id]
+                Rpggen.dice[d['id']] = d
+            else :
+                d['_type'] = 'table'
+                d['rows'] = [ ]
+                ii = 1
+                for item in d[k] :
+                    row = Row()
+                    row.result = item
+                    row.start = row.stop = ii
+                    ii += 1
+                    d['rows'].append(row)
+                d['roll'] = "1d"+str(ii)
+                Rpggen.tables[d['id']] = d
+            #print("singleton"+str(d))
+        else :
+            #print("loaded table: "+d['id'])
+            d['_type'] = 'table'
+            d['rows'] = []
+            maxnum = -sys.maxsize
+            minnum = sys.maxsize
+            for k in d :
+                if startnum.search(k) :
+                    sss = k.split('-')
+                    row = Row()
+                    row.start = int(sss[0])
+                    row.stop = row.start
+                    if len(sss) == 2 :
+                       row.stop = int(sss[1])
+                    row.result = d[k]
+                    d['rows'].append(row)
+                    # keeping track of smallest and largest if needed to create the roll
+                    if row.stop > maxnum :
+                        maxnum = row.stop
+                    if row.start < minnum :
+                        minnum = row.start
+            if not 'roll' in d :
+                d['roll'] = str(minnum)+"d"+str(int(maxnum/minnum))
+
+            Rpggen.tables[d['id']] = d
+
+    def roll(diceStr) :
+       components = re.split(r'[d\+\-]',diceStr)
+       total = 0
+       if components[0] == '' :
+           components[0] = '1'
+       #DEBUGGING print(components)
+       try:
+          diceSize = int(components[1])
+       except:
+          raise ValueError('Error in dice size while rolling %s.' % diceStr)
+       for ii in range(int(components[0])) :
+           if Rpggen.testData == None:
+              total += random.randint(1,diceSize)
+           else:
+              total += Rpggen.testData
+       if len(components)==3 :
+           try:
+              adjustment = int(components[2])
+           except:
+              raise ValueError('Error in adjustment while rolling %s.' % diceStr)
+           if '+' in diceStr :
+               total += adjustment
+           if '-' in diceStr :
+               total -= adjustment
+       return total
+
+    def chars(num,fro=string.ascii_lowercase) :
+        result = ""
+        for ii in range(num) :
+            result += (random.choice(fro))
+        return result
+
+
+# execute only if run as a script
+if __name__ == "__main__":
+    #print(len(sys.argv[1]))
+    if len(sys.argv) == 1:
+        # No arguments test something  then print out usage message
+        Rpggen.testData = 3
+        print('3d6 = %d' % Rpggen.roll('3d6'))
+        Rpggen.testData = None
+        print('3d6 = %d' % Rpggen.roll('3d6'))
+    if len(sys.argv)<3 or len(sys.argv)>4 :
+        print('usage: python ' + sys.argv[0]+ ' <filename> <tablename> [<count>]')
+        sys.exit(-1)
+
+    Rpggen.load(sys.argv[1])
+
+    if len(sys.argv)==3 :
+        print(Rpggen.finduse(sys.argv[2]))
+    else :
+        for ii in range(int(sys.argv[3])) :
+            print(Rpggen.finduse(sys.argv[2]))

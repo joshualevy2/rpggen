@@ -1,0 +1,36 @@
+
+Planetoid M6-60/38mc74
+Tiny sized planetoid. 
+Made of rock with some dust. 
+As the character's ship approaches Sensors go down entirely.
+Bright reflections on the surface. 
+
+--------------------------
+
+
+Planetoid M6-52/129gj111
+Tiny sized planetoid. 
+Made of rock with some dust. 
+As the character's ship approaches Sensors detect something odd (described below), but then later decide there is nothing there.
+Spaceship wreckage can be detected. 
+
+--------------------------
+
+
+Planetoid M6-94/181rh127
+Medium sized planetoid. 
+Made of rock with some dust. 
+As the character's ship approaches Sensors detect a small rock on a fast collision course with the ship.
+Bright reflections on the surface. 
+
+--------------------------
+
+
+Planetoid M6-39/70rh74
+Large sized planetoid. 
+Made of boulders. Odd shape: Barbell, animal, simple molecule, etc.
+As the character's ship approaches Sensors mostly work, but every now and then there is an obvious glitch.
+Odd sensor reading suggest unusual ores buried in the planetoid. 
+
+--------------------------
+
