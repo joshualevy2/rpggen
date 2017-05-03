@@ -1,5 +1,7 @@
+import sys
 import unittest
 
+sys.path.append('..')
 from CepheusTraveller import CepheusTraveller, Character
 from rpggen import Rpggen
 

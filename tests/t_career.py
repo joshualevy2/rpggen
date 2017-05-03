@@ -1,5 +1,6 @@
 import unittest
-
+import sys
+sys.path.append('..')
 from CepheusTraveller import Career, CepheusTraveller, Character
 from CorporateRepo import CorporateRepo
 from rpggen import Rpggen

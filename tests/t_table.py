@@ -1,5 +1,8 @@
+
+import sys
 import unittest
 
+sys.path.append('..')
 from rpggen import Table, Rpggen
 
 class TestRollAttr(unittest.TestCase):

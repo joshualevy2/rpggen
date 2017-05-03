@@ -1,4 +1,5 @@
-
+import sys
+sys.path.append('..')
 from rpggen import Rpggen
 
 def testroll(dicestr) :

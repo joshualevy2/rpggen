@@ -1,4 +1,7 @@
+import sys
 import unittest
+
+sys.path.append('..')
 
 from rpggen import Rpggen
 from Traveller import Profile, Traveller

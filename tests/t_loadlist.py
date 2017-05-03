@@ -1,5 +1,7 @@
+import sys
 import unittest
 
+sys.path.append('..')
 from rpggen import Rpggen
 
 class TestLoadList(unittest.TestCase):
