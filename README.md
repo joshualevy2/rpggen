@@ -12,6 +12,10 @@ To develop, it requires unittest, which is part of default Python.
 
 # Running Rpggen Programs
 
+There are a bunch of samples in the samples directory:
+    cd samples
+    python ..\rpggen.py malfunctions.rpggen MalfunctionDisplay
+
 The following utility scripts are here:
 ```
 python resultingtable.py _file_ _table} [_count_]
@@ -25,6 +29,8 @@ count, or 20 as default.
 For example:
 ```python
 python resultingtable.py rocks.rpggen rock 5
+
+
 ```
 
 Files starting with ht_ are "human test" files. They are designed to be run and then the results viewed by a person.  Like this:<br>

@@ -189,8 +189,9 @@ class Rpggen :
         try:
            re.split(r'[d\+\-]',name)
            return str(Rpggen.roll(name))
-        except:
+        except: 	
            print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+           raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
 
     def loadlist(name,results):
