@@ -2,7 +2,9 @@
 This is a python3 application.
 
 To run it requires Bottle, which can be installed with:
+```shell
 pip install bottle
+```
 
 To develop, it requires unittest, which is part of default Python.
 
@@ -15,13 +17,17 @@ python resultingtable.py <file> <table> [<count>]
     count, or 20 as default. 
 
     For example:
+    ```python
     python resultingtable.py rocks.rpggen rock 5
-
+    ```
 
 Files starting with ht_ are "human test" files. They are designed to be run and then the results viewed by a person.  Like this:
+```
 python ht_roll.py     # tests basic dice rolling
 python ht_chars.py    # tests random characters
-
+```
 
 Might need this on Windows:
+```
 set PYTHONIOENCODING=utf-8
+```
