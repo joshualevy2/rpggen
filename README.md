@@ -1,5 +1,5 @@
 
-= Installing Rpggen =
+# Installing Rpggen
 
 This is a python3 application.
 
@@ -10,7 +10,7 @@ pip install bottle
 
 To develop, it requires unittest, which is part of default Python.
 
-= Running Rpggen Programs =
+# Running Rpggen Programs
 
 The following utility scripts are here:
 ```
@@ -40,7 +40,7 @@ Might need this on Windows:
 set PYTHONIOENCODING=utf-8
 ```
 
-= Quick Overview of Rpggen's Object Oriented Architecture =
+# Quick Overview of Rpggen's Object Oriented Architecture 
 
 (This section is for programmers.)
 
