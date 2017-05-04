@@ -30,7 +30,8 @@ class CorporateRepo(Career):
    
    @classmethod
    def setup(self):
-      Rpggen.load('CorporateRepo.rpggen')
+      #Rpggen.load('CorporateRepo.rpggen')
+      pass
       
    def doBasicTraining(self, char):
       char.change(('skill','add','Liaison', '0'))

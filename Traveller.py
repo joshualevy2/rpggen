@@ -235,6 +235,8 @@ class Traveller():
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
       '''
+      if customizations is None:
+         return default      
       try:
          result = self.customizations[name]
          return result

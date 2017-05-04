@@ -106,7 +106,26 @@ class Table:
             else :
                return ''
 
-class Row :
+class Template:
+   def __init__(self,name,template=None):
+      # If is the first argument which is optional
+      if template is None:
+         template = name
+         name = None
+      self.id = name
+      self.template = template
+
+   def internal_check(self):
+      printName = self.id
+      if self.id is None:
+         printName = "Not Set"
+      if self.template is None:
+         raise ValueError('Template %s has no template set.' % printName)    
+
+   def use(self):
+      return self.template.render(use=use,rpggen=Rpggen)
+
+class Row:
    start = -1
    stop = -1
    result = ""
@@ -114,19 +133,39 @@ class Row :
    def smallStr(self):
       return '[%d-%d: %s]' % (self.start, self.stop, self.result)
 
-class Rpggen :
+class Rpggen:
     raw = {}
     tables = {}
     templates = {}
     keywords = {}
     dice = {}
     testData = None
+    customziations = None
 
-    def type_notused(obj) :
-        if "text" in d :
-            return 'template'
-        else :
-            return 'table'
+   def setAllCustomizations(self,customizations):
+      '''Sets all customizations by replacing whatever is there with those listed
+         in the argument.  Previous customizations are lost, even if their is non-standard
+         similar customization in the argument.
+      '''
+      self.customziations = customizations
+
+   def setCustomization(self, name, value):
+      '''Sets one customization.  Either changes the value, if it already exists,
+         or creates it new, with the given value.
+      '''
+      self.customziations[name] = value
+      
+   def getCustomization(self, name, default=None):
+      '''Returns the customization value, or the second argument, if that
+         customization is not set, or None if the second argument is empty.
+      '''
+      if customizations is None:
+         return default
+      try:
+         result = self.customizations[name]
+         return result
+      except KeyError:
+         return default    
 
     def getNth(table,nth):
        for k,v in table['rows'].items():
@@ -273,7 +312,7 @@ class Rpggen :
     def roll(diceStr) :
        match = re.search(r'([0-9+])?([dDsS])([0-9]+)([-+][0-9+])?',diceStr)
        if match == None:
-           print('%s was not a dice roll' % diceStr)
+           raise ValueError('%s was not a dice roll' % diceStr)
        #DEBUGGING print('%s %s %s %s' % (match.group(1),match.group(2),match.group(3),match.group(4)))
        total = 0
        diceNum = match.group(1)

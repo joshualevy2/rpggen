@@ -31,7 +31,8 @@ class CorporateRepo(Career):
       	           ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?'])
 
    def setup(self):
-      Rpggen.load('CorporateRepo.rpggen')
+      #Rpggen.load('CorporateRepo.rpggen')
+      pass
    
  #  def doBasicTraining(self, character):
  #     character.change(('skill','add','Liaison', '0'))
