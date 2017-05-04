@@ -1,0 +1,3 @@
+*.pyo
+*.out
+__pycache__/*
