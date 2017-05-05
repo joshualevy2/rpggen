@@ -16,11 +16,11 @@ class TestRollAttr(unittest.TestCase):
       self.corpRepo.dex = 12
 
    def test_1(self):
-      result = self.corpRepo.rollAttr('int','9+')
+      result = self.corpRepo.roll('int','9+')
       self.assertFalse(result)
 
    def test_2(self):
-      result = self.corpRepo.rollAttr('dex','2+')  
+      result = self.corpRepo.roll('dex','2+')  
       self.assertTrue(result)
 
    # TODO: add more tests  each DM different attr and targets.

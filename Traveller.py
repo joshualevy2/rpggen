@@ -67,9 +67,9 @@ class Career():
          Raises an exception if the argument is not known to this career.
       '''
       roll = self.config[name]
-      return Traveller.roll(roll)
+      return Traveller.roll(target=roll)
       
-   def printTestHelper(self,name):
+   def printTestHelper(self, name):
       try:
         data = self.config[name]
         print('Has %s: %s' % (name, str(data)))
@@ -94,7 +94,7 @@ class Career():
 
 class Character():
 
-   def addToSkill(self,name,value):
+   def addToSkill(self, name, value):
       for skill in self.skills:
          if name == skill.name:
             skill.value += value
@@ -104,6 +104,18 @@ class Character():
       pocket = self.money['pocket']
       bank = self.money['bank']
       return pocket + bank
+   
+   def dm(self, attr):
+      if attr == 'dex': return Traveller.dm(self.dex)
+      if attr == 'end': return Traveller.dm(self.end)
+      if attr == 'int': return Traveller.dm(self.int)
+      if attr == 'edu': return Traveller.dm(self.edu)
+      if attr == 'str': return Traveller.dm(self.str)
+      if attr == 'soc': return Traveller.dm(self.soc)
+      if attr == 'psi': return Traveller.dm(self.psi)
+
+   def roll(self, attr, target):
+      return Traveller.roll(target=target, dm=self.dm(attr))
       
    def skillNames(self):
       skillNames = []
@@ -192,24 +204,45 @@ class Traveller():
       return hex(num)[2].upper()
 
    @classmethod
-   def roll(cls,dice=None,target=None):
-      got = Rpggen.roll("2d6")
-      if dice == None:
-         return got
-      if type(dice) == int:
-         got = rpggen.roll(str(dice)+"d6")
+   def dm(cls,num):
+      """
+      """
+      return 0
 
-      targetMatch = None
-      if target != None:
-         targetMatch = re.search(r"(^[0123456789]+)([+-]?$)", target)
-      if type(dice) == str:
-          targetMatch = re.search(r"(^[0123456789]+)([+-]?$)", dice)
-      if targetMatch == None:
+   @classmethod
+   def roll(cls, dice=None, target=None, dm=None):
+      #print('roll(%s, %s, %s)' % (dice,target,dm))
+      got = Rpggen.roll("2d6")
+      if dice is not None:
+         if type(dice) == int:
+            got = Rpggen.roll(str(dice)+"d6")
+         if type(dice) == str:
+            got = Rpggen.roll(dice)
+
+      #print('raw roll %d' % got)
+      dmValue = 0
+      if type(dm) == int:
+         got = got + dm
+      if dm is not None and type(dm) == str:
+         dmMatch = re.search(r"^([+-]?)([0123456789]+)$", dm)
+         dmDir = dmMatch.group(1)
+         if dmDir is None: dmDir = '+'
+         dmValue = int(dmMatch.group(2))
+         if dmDir == '+':
+            got = got + dmValue
+         elif dmDir == '-':
+            got = got - dmValue
+
+      if target is None:
+          #print('returning %d' % got)
           return got
 
+      targetMatch = re.search(r"^([0123456789]+)([+-]?)$", target)
+      #print(targetMatch)
+      
       targetNum = int(targetMatch.group(1))
       targetCmp = targetMatch.group(2)
-      if targetCmp == None:
+      if targetCmp is None:
          return got == targetNum
       elif targetCmp == '+':
          return got >= targetNum

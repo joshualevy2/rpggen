@@ -142,20 +142,20 @@ class Rpggen:
     testData = None
     customziations = None
 
-   def setAllCustomizations(self,customizations):
+    def setAllCustomizations(self,customizations):
       '''Sets all customizations by replacing whatever is there with those listed
          in the argument.  Previous customizations are lost, even if their is non-standard
          similar customization in the argument.
       '''
       self.customziations = customizations
 
-   def setCustomization(self, name, value):
+    def setCustomization(self, name, value):
       '''Sets one customization.  Either changes the value, if it already exists,
          or creates it new, with the given value.
       '''
       self.customziations[name] = value
       
-   def getCustomization(self, name, default=None):
+    def getCustomization(self, name, default=None):
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
       '''
@@ -222,7 +222,7 @@ class Rpggen:
                return Rpggen.use(d)        
         try:
            tab = Rpggen.tables[name]
-           return Rpggen.use(tab)
+           return tab.use()  #Rpggen.use(tab)
         except:
            pass
         try:
@@ -233,20 +233,20 @@ class Rpggen:
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
 
-    def loadlist(name,results):
-       lineNum = 1
-       d = {}
-       d['_type'] = 'table'
-       d['id'] = name
-       d['roll'] = "1d%d" % len(results)
-       d['rows'] = []
-       for result in results :
-          row = Row()
-          row.start = row.stop = lineNum
-          lineNum += 1
-          row.result = result
-          d['rows'].append(row)
-       Rpggen.tables[name] = d 
+#    def loadlist(name,results):
+#       lineNum = 1
+#       d = {}
+#       d['_type'] = 'table'
+#       d['id'] = name
+#       d['roll'] = "1d%d" % len(results)
+#       d['rows'] = []
+#       for result in results :
+#          row = Row()
+#          row.start = row.stop = lineNum
+#          lineNum += 1
+#          row.result = result
+#          d['rows'].append(row)
+#       Rpggen.tables[name] = d 
        
     def load(filename) :
       startnum = re.compile(r"^[0123456789]+")
