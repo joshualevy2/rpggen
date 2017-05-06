@@ -2,7 +2,7 @@
 import json, re, random, sys, string
 from bottle import SimpleTemplate
 
-def use(arg) :
+def use(arg):
     return Rpggen.finduse(arg)
     
 class Dice:
@@ -113,7 +113,7 @@ class Template:
          template = name
          name = None
       self.id = name
-      self.template = template
+      self.template = SimpleTemplate(template)
 
    def internal_check(self):
       printName = self.id

@@ -162,6 +162,7 @@ class Profile():
    value = ''
    
    Attr = '23456789AB'
+   Hex = '123456789ABCDEF'
    Starports = 'ABCDEX'
    
    

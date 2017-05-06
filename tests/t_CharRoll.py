@@ -5,7 +5,7 @@ sys.path.append('..')
 from CepheusTraveller import CepheusTraveller, Character
 from rpggen import Rpggen
 
-class TestRollAttr(unittest.TestCase):
+class TestCharacterRoll(unittest.TestCase):
 
    def setUp(self):
       # Dice roller always returns this number, so we know what the results should be.
