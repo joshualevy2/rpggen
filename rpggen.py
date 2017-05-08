@@ -2,7 +2,7 @@
 import json, re, random, sys, string
 from bottle import SimpleTemplate
 
-def use(arg) :
+def use(arg):
     return Rpggen.finduse(arg)
     
 class Dice:
@@ -113,7 +113,7 @@ class Template:
          template = name
          name = None
       self.id = name
-      self.template = template
+      self.template = SimpleTemplate(template)
 
    def internal_check(self):
       printName = self.id
@@ -222,8 +222,8 @@ class Rpggen:
                return Rpggen.use(d)        
         try:
            tab = Rpggen.tables[name]
-           return tab.use() #Rpggen.use(tab)
-        except KeyError:
+           return tab.use()  #Rpggen.use(tab)
+        except:
            pass
         try:
            re.split(r'[d+-]',name)  # JCL used to have backslashes before + and -
@@ -233,20 +233,20 @@ class Rpggen:
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
 
-    def loadlist(name,results):
-       lineNum = 1
-       d = {}
-       d['_type'] = 'table'
-       d['id'] = name
-       d['roll'] = "1d%d" % len(results)
-       d['rows'] = []
-       for result in results :
-          row = Row()
-          row.start = row.stop = lineNum
-          lineNum += 1
-          row.result = result
-          d['rows'].append(row)
-       Rpggen.tables[name] = d 
+#    def loadlist(name,results):
+#       lineNum = 1
+#       d = {}
+#       d['_type'] = 'table'
+#       d['id'] = name
+#       d['roll'] = "1d%d" % len(results)
+#       d['rows'] = []
+#       for result in results :
+#          row = Row()
+#          row.start = row.stop = lineNum
+#          lineNum += 1
+#          row.result = result
+#          d['rows'].append(row)
+#       Rpggen.tables[name] = d 
        
     def load(filename) :
       startnum = re.compile(r"^[0123456789]+")
