@@ -25,7 +25,25 @@ class Dice:
    def use(self):
       return Rpggen.roll(self.dice)
       
-   
+class Select:
+
+   @classmethod
+   def choose(cls,myList, number=1):
+      if number == 1:
+         if Rpggen.testData == None:
+            return random.choice(myList)
+         else:
+            if Rpggen.testData < len(myList):
+               return myList[Rpggen.testData-1]
+            else:
+               # TODO if testData out of range
+               pass
+      else:
+         result = []
+         for idx in range(number):
+            pass
+         return result
+
 class Table:
    id = None
    dice = None
@@ -140,29 +158,29 @@ class Rpggen:
     keywords = {}
     dice = {}
     testData = None
-    customziations = None
+    customizations = {}
 
-    def setAllCustomizations(self,customizations):
+    def setAllCustomizations(customizations):
       '''Sets all customizations by replacing whatever is there with those listed
          in the argument.  Previous customizations are lost, even if their is non-standard
          similar customization in the argument.
       '''
-      self.customziations = customizations
+      Rpggen.customizations = customizations
 
-    def setCustomization(self, name, value):
+    def setCustomization(name, value):
       '''Sets one customization.  Either changes the value, if it already exists,
          or creates it new, with the given value.
       '''
-      self.customziations[name] = value
+      Rpggen.customizations[name] = value
       
-    def getCustomization(self, name, default=None):
+    def getCustomization(name, default=None):
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
       '''
-      if customizations is None:
+      if Rpggen.customizations is None:
          return default
       try:
-         result = self.customizations[name]
+         result = Rpggen.customizations[name]
          return result
       except KeyError:
          return default    
@@ -232,25 +250,15 @@ class Rpggen:
            #print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
-
-#    def loadlist(name,results):
-#       lineNum = 1
-#       d = {}
-#       d['_type'] = 'table'
-#       d['id'] = name
-#       d['roll'] = "1d%d" % len(results)
-#       d['rows'] = []
-#       for result in results :
-#          row = Row()
-#          row.start = row.stop = lineNum
-#          lineNum += 1
-#          row.result = result
-#          d['rows'].append(row)
-#       Rpggen.tables[name] = d 
-       
-    def load(filename) :
+     
+    def load(filename, optional=False):
+      '''Loads an rpggen file into the program.
+         optional=True if the file is optional: no error message if not found.
+      '''
       startnum = re.compile(r"^[0123456789]+")
       diceRE = re.compile(r"^[0123456789]*d[0123456789]+")
+      if not os.path.isfile(filename) and optional:
+         return
       with open(filename, 'r') as file:
          Rpggen.raw = json.load(file)
       for d in Rpggen.raw :
@@ -306,10 +314,13 @@ class Rpggen:
                         minnum = row.start
             if not 'roll' in d :
                 d['roll'] = str(minnum)+"d"+str(int(maxnum/minnum))
-
+            # TODO if table is already there.
             Rpggen.tables[d['id']] = d
 
-    def roll(diceStr) :
+    def roll(diceStr):
+       d66match = re.search(r'[dD]6(6+)',diceStr)
+       if d66match is not None and Rpggen.getCustomization('d66support', False):
+          return Rpggen.rollconcat(diceStr)   
        match = re.search(r'([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
        if match == None:
            raise ValueError('%s was not a dice roll' % diceStr)
@@ -328,6 +339,7 @@ class Rpggen:
            if Rpggen.testData == None:
               total += random.randint(1,diceSize)
            else:
+              # TODO if testData out of range
               total += Rpggen.testData
        diceAdjustment = match.group(4)
        if diceAdjustment is not None :
@@ -338,7 +350,22 @@ class Rpggen:
               raise ValueError('Error in adjustment while rolling %s in the %s part.' % (diceStr, diceAdjustment))
        return total
 
-    def chars(num,fro=string.ascii_lowercase) :
+    def rollconcat(diceStr):
+       '''Supports d6 only.
+          Traveller
+       '''
+       total = 0
+       numDice = len(diceStr)-1
+       for ii in range(numDice) :
+           total = total * 10
+           if Rpggen.testData == None:
+              total += random.randint(1,6)
+           else:
+              # TODO if testData out of range
+              total += Rpggen.testData
+       return total
+
+    def chars(num, fro=string.ascii_lowercase) :
         result = ""
         for ii in range(num) :
             result += (random.choice(fro))

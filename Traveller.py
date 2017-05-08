@@ -238,6 +238,7 @@ class Profile():
 class Traveller():
 
    customziations = {}
+   Rpggen.setCustomization('d66support',True)
    
    @classmethod
    def digit2char(cls,num):

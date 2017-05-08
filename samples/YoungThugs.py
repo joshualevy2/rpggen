@@ -6,7 +6,7 @@ import json
 sys.path.append('..')
 from CepheusTraveller import Character
 from GetFromWeb import GetFromWeb
-from rpggen import Rpggen, Table
+from rpggen import Rpggen, Select, Table
 from Traveller import Attribute, Traveller
 
 # TODO Why not CepheusTraveller.Character?
@@ -32,7 +32,7 @@ class YoungThug(Character):
       self.edu = Rpggen.roll('2d2')
       self.soc = Rpggen.roll('2d3')
 
-      level = random.choice(['teen','start', 'young'])
+      level = Select.choose(['teen','start', 'young'])
       if level == 'teen':
        self.age = Rpggen.roll('1d3+15')
        self.terms = 0  

@@ -3,10 +3,11 @@ sys.path.append('..')
 from rpggen import Rpggen
 
 def testroll(dicestr) :
-    print(dicestr+": "+str(Rpggen.roll(dicestr))+" "+str(Rpggen.use(dicestr))+" "+str(Rpggen.finduse(dicestr)))
+    print(dicestr+": "+str(Rpggen.roll(dicestr))+" "+str(Rpggen.use(dicestr))+" "+str(Rpggen.finduse(dicestr))+
+                  " "+str(Rpggen.roll(dicestr))+" "+str(Rpggen.use(dicestr))+" "+str(Rpggen.finduse(dicestr)))
  
 # execute only if run as a script    
-if __name__ == "__main__":     
+if __name__ == "__main__":  
     testroll("1d10")
     testroll("d6")
     testroll("3d6")
@@ -18,3 +19,7 @@ if __name__ == "__main__":
     testroll("1d7")        
     testroll("1d3+17") 
     testroll("17d3") 
+    testroll("d66")
+    print('Set d66support=True')
+    Rpggen.setCustomization('d66support',True)
+    testroll("d66")
