@@ -88,10 +88,10 @@ class Career():
          Raises an exception if the argument is not known to this career.
       '''
       try:
-         roll = self.config[name]
+         target = self.config[name]
       except:
          KeyError('The Career %s did not have a config item called %s' % (self.name, name))
-      return Traveller.roll(roll)
+      return Traveller.roll(target=target)
 
    def use(self, name):
       '''Roll on the named item for this career.

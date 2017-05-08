@@ -73,7 +73,7 @@ class Table:
       else:
          raise TypeError('The values argument of this function must be a list or a dict, but is a %s' % type(x))      
       if name is not None:   
-         print('adding table %s' % name)
+         #print('DEBUG adding table %s' % name)
          Rpggen.tables[name] = self
    
    def internal_check(self):

@@ -27,7 +27,7 @@ class TestProfile(unittest.TestCase):
       for ii in range(5):
          str = three.generate() 
          fmt = three.smallStr()
-         print('Four letters (letter, number letter, punct: %s %s' % (str, fmt))
+         #print('Four letters (letter, number letter, punct: %s %s' % (str, fmt))
          self.assertEqual(len(str), 4)  
       
    def test_1f(self):
@@ -49,7 +49,7 @@ class TestProfile(unittest.TestCase):
       for ii in range(5):
          str = three.generate() 
          fmt = three.smallStr()
-         print('Four letters (letter, number letter, punct: %s %s' % (str, fmt))
+         #print('Four letters (letter, number letter, punct: %s %s' % (str, fmt))
          self.assertEqual(len(str), 4)  
          self.assertEqual(len(fmt), 5)
 

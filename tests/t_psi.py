@@ -22,19 +22,6 @@ class TestPsi(unittest.TestCase):
        upp = corpRepo.strUpp()
        self.assertEqual(len(upp), 8)       
        print('UPP = '+upp)
-       print(json.dumps(corpRepo.__dict__))
-       
-
-#    def test_isupper(self):
- #       self.assertTrue('FOO'.isupper())
-  #      self.assertFalse('Foo'.isupper())
-#
- #   def test_split(self):
-  #      s = 'hello world'
-   #     self.assertEqual(s.split(), ['hello', 'world'])
-    #    # check that s.split fails when the separator is not a string
-     #   with self.assertRaises(TypeError):
-      #      s.split(2)
 
 if __name__ == '__main__':
     Rpggen.testData = 2

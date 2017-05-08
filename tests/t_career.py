@@ -20,7 +20,6 @@ class TestCareer(unittest.TestCase):
  
       # Initialize the CorporateRepo career
       self.crCareer = CorporateRepo()
-      self.crCareer.setup()
  
       # Create an (empty) character to start with.
       #self.crPerson = Character()      
