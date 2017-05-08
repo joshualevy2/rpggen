@@ -77,6 +77,7 @@ class Character(Character):
       
    def createUpToCareer(self):
       self.name = GetFromWeb.get('names')
+      self.lastCareer = "No Career"
       self.str = Rpggen.roll('2d6')
       self.dex = Rpggen.roll('2d6')
       self.end = Rpggen.roll('2d6')

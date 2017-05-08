@@ -1,4 +1,5 @@
 
+python t_Attribute.py
 python t_career.py
 python t_dice.py
 python t_loadlist.py

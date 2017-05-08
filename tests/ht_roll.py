@@ -16,5 +16,5 @@ if __name__ == "__main__":
     testroll("1d100")
     testroll("1d1000")
     testroll("1d7")        
-    
-
+    testroll("1d3+17") 
+    testroll("17d3") 

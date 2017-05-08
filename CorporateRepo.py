@@ -29,11 +29,7 @@ class CorporateRepo(Career):
       	           ['Zero-G', 'Comms', 'Admin','Electronics','Leadership','Jack-o-Trades'])
       self.addTable('AdvancedDevelopment',
       	           ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?'])
-
-   def setup(self):
-      #Rpggen.load('CorporateRepo.rpggen')
-      pass
-   
+  
  #  def doBasicTraining(self, character):
  #     character.change(('skill','add','Liaison', '0'))
 
@@ -44,26 +40,27 @@ class CorporateRepo(Career):
    	return result
 
 if __name__ == '__main__':    
- # Initialize the CepheusTraveller environment, which also initializes the 
- # basic Traveller environment.
- cepheusTraveller = CepheusTraveller()
+   # Initialize the CepheusTraveller environment, which also initializes the 
+   # basic Traveller environment.
+   cepheusTraveller = CepheusTraveller()
  
- # Initialize the CorporateRepo career
- crCareer = CorporateRepo()
- crCareer.setup()
+   # Initialize the CorporateRepo career
+   crCareer = CorporateRepo()
  
- # Create an (empty) character to start with.
- crPerson = Character()
+   # Create an (empty) character to start with.
+   crPerson = Character()
  
- # Do all the pre-career character generation steps.
- crPerson.createUpToCareer()
+   # Do all the pre-career character generation steps.
+   crPerson.createUpToCareer()
  
- # Do basic training for this person
- crCareer.doBasicTraining(crPerson)
+   # Do basic training for this person
+   crCareer.doBasicTraining(crPerson)
 
- endReason = None 
- while endReason is None:
-    endReason = crCareer.doOneTerm(crPerson)
+   endReason = None 
+   while endReason is None:
+      endReason = crCareer.doOneTerm(crPerson)
 
- print(crPerson.strSmall())
- #cr.printTest()
+   crPerson.endReason = endReason
+
+   print(crPerson.strSmall())
+   #cr.printTest()

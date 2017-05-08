@@ -1,5 +1,6 @@
 import sys
 import unittest
+import json
 
 sys.path.append('..')
 from CepheusTraveller import Character
@@ -21,6 +22,7 @@ class TestPsi(unittest.TestCase):
        upp = corpRepo.strUpp()
        self.assertEqual(len(upp), 8)       
        print('UPP = '+upp)
+       print(json.dumps(corpRepo.__dict__))
        
 
 #    def test_isupper(self):

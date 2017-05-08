@@ -9,19 +9,35 @@ class Attribute():
    useCost = False
 
    def __init__(self,name,value=None,cost=0):
-      self.name = name
+      self.specific = None
+      if '(' in name:
+         parts = re.split('[()]', name)
+         self.name = parts[0].strip()
+         self.specific = parts[1].strip()
+         if self.specific == '':
+            raise ValueError('When creating Attribute(%s,...) specific skill was empty.' % name)
+      else:
+         self.name = name
       self.value = value
-      self.cost = cost
+      #print('DEBUG (%s,%s) -> [%s|%s|%s]' % (name, value, self.name, self.specific, self.value))
+      if self.useCost:
+         self.cost = cost
 
    def strAttr(self):
-       if Attribute.useCost:
-          return '%s-%s [%d]' % (self.name, self.value, self.cost)
-       else:
-          return '%s-%s' % (self.name, self.value)
+      specific = ''
+      if self.specific is not None:
+         specific = ' (%s)' % self.specific
+      cost = ''
+      if Attribute.useCost:
+         cost = ' [%d]' % self.cost
+      return '%s%s-%s%s' % (self.name, specific, self.value, cost)
 
 class Career():
    #name = ''
    #config = {}
+   whichAdvantage = Table("WhichAdvantage", 
+                          ['MaterialBenefits','CashBenefits','PersonalDevelopment'
+                           'ServiceDevelopment'])
 
    def __init__(self,config):
       try:
@@ -55,6 +71,11 @@ class Career():
       if character.terms == 7:
           return 'Aged out of career'
       character.terms += 1
+
+      which = self.whichAdvantage.use()
+      print('using this table: %s' % which)
+      adv = self.roll(which)
+      print('add new %s' % adv)
       
       if self.roll('reenlistment'):
          return 'Could not reenlist.'
@@ -66,8 +87,22 @@ class Career():
          Returnes True if succeeds and False if it fails.
          Raises an exception if the argument is not known to this career.
       '''
-      roll = self.config[name]
+      try:
+         roll = self.config[name]
+      except:
+         KeyError('The Career %s did not have a config item called %s' % (self.name, name))
       return Traveller.roll(roll)
+
+   def use(self, name):
+      '''Roll on the named item for this career.
+         Returnes True if succeeds and False if it fails.
+         Raises an exception if the argument is not known to this career.
+      '''
+      try:
+         tab = self.config[name]
+      except:
+         KeyError('The Career %s did not have a config item called %s' % (self.name, name))
+      return tab.use()      
       
    def printTestHelper(self,name):
       try:
@@ -104,6 +139,11 @@ class Character():
       pocket = self.money['pocket']
       bank = self.money['bank']
       return pocket + bank
+
+   def dict(self):
+      '''Returns the character in dictionary format
+      '''
+      return self.__dict__
       
    def skillNames(self):
       skillNames = []
@@ -112,14 +152,17 @@ class Character():
       return skillNames
 
    def strSmall(self):
-       print('Name: %s        %s  %d years old' % 
-             (self.name, self.strUpp(),self.age))
-       print('%s %d term%s              Cr%d' % (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), self.availableMoney()))
-       print('')
-       print(self.strSkills())
-       print('Equipment: '+str(self.equipment))
-       print('Money: '+str(self.money))
-       print('')
+       result = ''
+       result += ('Name: %s        %s  %d years old\n' % 
+                  (self.name, self.strUpp(),self.age))
+       result += '%s (%d term%s)              Cr%d\n' % (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), self.availableMoney())
+       result += '\n'
+       result += self.strSkills()+'\n'
+       result += 'Equipment: %s\n' % ', '.join(self.equipment) 
+       result += ('Money: %d in pocket, %d in bank, %d in pension\n' %
+                  (self.money['pocket'], self.money['bank'], self.money['pension']))
+       result += '\n'
+       return result
 
    def strCareer(self):
        if self.lastCareer == None:

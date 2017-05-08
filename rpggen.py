@@ -73,7 +73,7 @@ class Table:
       else:
          raise TypeError('The values argument of this function must be a list or a dict, but is a %s' % type(x))      
       if name is not None:   
-         #DEBUGGING print('adding table %s' % name)
+         print('adding table %s' % name)
          Rpggen.tables[name] = self
    
    def internal_check(self):
@@ -142,20 +142,20 @@ class Rpggen:
     testData = None
     customziations = None
 
-   def setAllCustomizations(self,customizations):
+    def setAllCustomizations(self,customizations):
       '''Sets all customizations by replacing whatever is there with those listed
          in the argument.  Previous customizations are lost, even if their is non-standard
          similar customization in the argument.
       '''
       self.customziations = customizations
 
-   def setCustomization(self, name, value):
+    def setCustomization(self, name, value):
       '''Sets one customization.  Either changes the value, if it already exists,
          or creates it new, with the given value.
       '''
       self.customziations[name] = value
       
-   def getCustomization(self, name, default=None):
+    def getCustomization(self, name, default=None):
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
       '''
@@ -222,14 +222,14 @@ class Rpggen:
                return Rpggen.use(d)        
         try:
            tab = Rpggen.tables[name]
-           return Rpggen.use(tab)
-        except:
+           return tab.use() #Rpggen.use(tab)
+        except KeyError:
            pass
         try:
-           re.split(r'[d\+\-]',name)
+           re.split(r'[d+-]',name)  # JCL used to have backslashes before + and -
            return str(Rpggen.roll(name))
         except: 	
-           print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+           #print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
 
@@ -310,10 +310,10 @@ class Rpggen:
             Rpggen.tables[d['id']] = d
 
     def roll(diceStr) :
-       match = re.search(r'([0-9+])?([dDsS])([0-9]+)([-+][0-9+])?',diceStr)
+       match = re.search(r'([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
        if match == None:
            raise ValueError('%s was not a dice roll' % diceStr)
-       #DEBUGGING print('%s %s %s %s' % (match.group(1),match.group(2),match.group(3),match.group(4)))
+       #print('DEBUG: %s %s %s %s' % (match.group(1),match.group(2),match.group(3),match.group(4)))
        total = 0
        diceNum = match.group(1)
        if diceNum is None :
