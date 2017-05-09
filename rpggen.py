@@ -1,5 +1,5 @@
 
-import json, re, random, sys, string
+import json, logging, re, random, sys, string
 from bottle import SimpleTemplate
 
 def use(arg):
@@ -24,134 +24,10 @@ class Dice:
       
    def use(self):
       return Rpggen.roll(self.dice)
-      
-class Select:
-
-   @classmethod
-   def choose(cls,myList, number=1):
-      if number == 1:
-         if Rpggen.testData == None:
-            return random.choice(myList)
-         else:
-            if Rpggen.testData < len(myList):
-               return myList[Rpggen.testData-1]
-            else:
-               # TODO if testData out of range
-               pass
-      else:
-         result = []
-         for idx in range(number):
-            pass
-         return result
-
-class Table:
-   id = None
-   dice = None
-   rows = []
-   
-   def __init__(self,name,values=None):
-      # If is the first argument which is optional
-      if values is None:
-         values = name
-         name = None
-      self.id = name
-      self.dice = None
-      self.rows = []
-      lineNum = 1
-      if type(values) is list:
-         self.dice = '1d%d' % len(values)
-         for value in values :
-            row = Row()
-            row.start = row.stop = lineNum
-            lineNum += 1
-            row.result = value
-            self.rows.append(row)
-      elif type(values) is dict:
-         maxnum = -sys.maxsize
-         minnum = sys.maxsize
-         for key, value in values.items() :
-            if key == 'roll':
-               self.dice = value
-            else:
-               row = Row()
-               sss = key.split('-')
-               row.start = int(sss[0])
-               row.stop = row.start
-               if len(sss) == 2 :
-                  row.stop = int(sss[1])               
-               row.result = value
-               self.rows.append(row) 
-               # keeping track of smallest and largest if needed to create the roll
-               if row.stop > maxnum :
-                  maxnum = row.stop
-               if row.start < minnum :
-                  minnum = row.start
-         if self.dice is None :
-            self.dice = str(minnum)+"d"+str(int(maxnum/minnum))                            
-      else:
-         raise TypeError('The values argument of this function must be a list or a dict, but is a %s' % type(x))      
-      if name is not None:   
-         #print('DEBUG adding table %s' % name)
-         Rpggen.tables[name] = self
-   
-   def internal_check(self):
-      printName = self.id
-      if self.id is None:
-         printName = "Not Set"
-      if self.dice is None:
-         raise ValueError('Table %s has no dice set.' % printName)
-      if len(self.rows) == 0:
-         raise ValueError('Table %s has no rows in it.' % printName)
-
-   def results(self):
-      results = []
-      for row in self.rows:
-         results.append(row.result)
-      return results
-      
-   def roll(self):
-      return self.use()
-      
-   def use(self):
-      self.internal_check()
-      roll = Rpggen.roll(self.dice)
-      for row in self.rows:
-         if row.start <= roll <= row.stop :
-            if row.result != "" :
-               template = SimpleTemplate(row.result)
-               finalResult = template.render(use=use,rpggen=Rpggen)
-               return finalResult
-            else :
-               return ''
-
-class Template:
-   def __init__(self,name,template=None):
-      # If is the first argument which is optional
-      if template is None:
-         template = name
-         name = None
-      self.id = name
-      self.template = SimpleTemplate(template)
-
-   def internal_check(self):
-      printName = self.id
-      if self.id is None:
-         printName = "Not Set"
-      if self.template is None:
-         raise ValueError('Template %s has no template set.' % printName)    
-
-   def use(self):
-      return self.template.render(use=use,rpggen=Rpggen)
-
-class Row:
-   start = -1
-   stop = -1
-   result = ""
-    
-   def smallStr(self):
-      return '[%d-%d: %s]' % (self.start, self.stop, self.result)
 
 class Rpggen:
+    '''This is a singleton class (so it operates more like a library.
+    '''
     raw = {}
     tables = {}
     templates = {}
@@ -160,19 +36,7 @@ class Rpggen:
     testData = None
     customizations = {}
 
-    def setAllCustomizations(customizations):
-      '''Sets all customizations by replacing whatever is there with those listed
-         in the argument.  Previous customizations are lost, even if their is non-standard
-         similar customization in the argument.
-      '''
-      Rpggen.customizations = customizations
 
-    def setCustomization(name, value):
-      '''Sets one customization.  Either changes the value, if it already exists,
-         or creates it new, with the given value.
-      '''
-      Rpggen.customizations[name] = value
-      
     def getCustomization(name, default=None):
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
@@ -204,8 +68,27 @@ class Rpggen:
        length = len(rows)
        nn = Rpggen
        (k,v) = getNth(table,nn)
-       return (k,v)        
+       return (k,v)  
+
+    def setAllCustomizations(customizations):
+      '''Sets all customizations by replacing whatever is there with those listed
+         in the argument.  Previous customizations are lost, even if their is non-standard
+         similar customization in the argument.
+      '''
+      Rpggen.customizations = customizations
+
+    def setCustomization(name, value):
+      '''Sets one customization.  Either changes the value, if it already exists,
+         or creates it new, with the given value.
+      '''
+      Rpggen.customizations[name] = value
     
+    def setup(customizations=None, logger=None):
+       if customizations is not None:
+          setAllCustomizations(customizations)
+       if logger is not None:
+          pass
+
     def use(obj) :
         #print(obj)
         if isinstance(obj,"".__class__) :
@@ -246,7 +129,7 @@ class Rpggen:
         try:
            re.split(r'[d+-]',name)  # JCL used to have backslashes before + and -
            return str(Rpggen.roll(name))
-        except: 	
+        except:   
            #print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
@@ -321,10 +204,13 @@ class Rpggen:
        d66match = re.search(r'[dD]6(6+)',diceStr)
        if d66match is not None and Rpggen.getCustomization('d66support', False):
           return Rpggen.rollconcat(diceStr)   
-       match = re.search(r'([0-9]+)?o?([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
+       match = re.search(r'([0-9]+o)?([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
        if match == None:
            raise ValueError('%s was not a dice roll' % diceStr)
-       #print('DEBUG: %s %s %s %s' % (match.group(1),match.group(2),match.group(3),match.group(4)))
+       logging.debug('%s -> %s-%s-%s-%s' % 
+                     (diceStr, match.group(1),match.group(2),match.group(3),match.group(4)))
+       if match.group(1) is not None:
+          raise ValueError('No support for "o" dice type.')
        total = 0
        diceNum = match.group(2)
        if diceNum is None :
@@ -369,8 +255,154 @@ class Rpggen:
         result = ""
         for ii in range(num) :
             result += (random.choice(fro))
-        return result
+        return result      
 
+class Select:
+
+   @classmethod
+   def choose(cls,myList, number=1):
+      if number == 1:
+         if Rpggen.testData == None:
+            return random.choice(myList)
+         else:
+            if Rpggen.testData < len(myList):
+               return myList[Rpggen.testData-1]
+            else:
+               # TODO if testData out of range
+               pass
+      else:
+         result = []
+         for idx in range(number):
+            pass
+         return result
+
+class Table:
+   id = None
+   dice = None
+   rows = []
+   unique = False
+   
+   def __init__(self, name, values=None, unique=None):
+      # If is the first argument which is optional
+      if values is None:
+         values = name
+         name = None
+      self.id = name
+      self.dice = None
+      self.rows = []
+      if not unique is None:
+         self.unique = unique
+      lineNum = 1
+      if type(values) is list:
+         self.dice = '1d%d' % len(values)
+         for value in values :
+            row = Row()
+            row.start = row.stop = lineNum
+            lineNum += 1
+            row.result = value
+            self.rows.append(row)
+      elif type(values) is dict:
+         maxnum = -sys.maxsize
+         minnum = sys.maxsize
+         for key, value in values.items() :
+            if key == 'roll':
+               self.dice = value
+            else:
+               row = Row()
+               sss = key.split('-')
+               row.start = int(sss[0])
+               row.stop = row.start
+               if len(sss) == 2 :
+                  row.stop = int(sss[1])               
+               row.result = value
+               self.rows.append(row) 
+               # keeping track of smallest and largest if needed to create the roll
+               if row.stop > maxnum :
+                  maxnum = row.stop
+               if row.start < minnum :
+                  minnum = row.start
+         if self.dice is None :
+            self.dice = str(minnum)+"d"+str(int(maxnum/minnum))                            
+      else:
+         raise TypeError('The values argument of this function must be a list or a dict, but is a %s' % type(x))      
+      if name is not None:   
+         #print('DEBUG adding table %s' % name)
+         Rpggen.tables[name] = self
+   
+   def internal_check(self):
+      printName = self.id
+      if self.id is None:
+         printName = "Not Set"
+      if self.dice is None:
+         raise ValueError('Table %s has no dice set.' % printName)
+      if len(self.rows) == 0:
+         raise ValueError('Table %s has no rows in it.' % printName)
+
+   def results(self):
+      results = []
+      for row in self.rows:
+         results.append(row.result)
+      return results
+      
+   def roll(self):
+      return self.use()
+      
+   def use(self):
+      self.internal_check()
+      roll = Rpggen.roll(self.dice)
+      for row in self.rows:
+         if row.start <= roll <= row.stop:
+            # If this row has been used, and the table is rolling uniquely (in general)
+            # Then we cycle through the table to find any unused entry.
+            if self.unique and row.used:
+               # Can not use what we rolled, so see if there is something else we can use.
+               row = None
+               for row2 in self.rows:
+                 if not row2.used:
+                    row = row2
+                    break
+               if row is None:    
+                  raise ValueError('Rolling uniquely on %s, but no rows are unused.' % self.id)
+            # We've now found the right row, so mark it as used, and return it (or it's template)
+            row.used = True
+            if row.result != "" :
+               template = SimpleTemplate(row.result)
+               finalResult = template.render(use=use,rpggen=Rpggen)
+               return finalResult
+            else :
+               return ''
+
+   def clear(self):
+      for row in self.rows:
+        row.used = False
+
+class Template:
+   def __init__(self,name,template=None):
+      # If is the first argument which is optional
+      if template is None:
+         template = name
+         name = None
+      self.id = name
+      self.template = SimpleTemplate(template)
+
+   def internal_check(self):
+      printName = self.id
+      if self.id is None:
+         printName = "Not Set"
+      if self.template is None:
+         raise ValueError('Template %s has no template set.' % printName)    
+
+   def use(self):
+      return self.template.render(use=use,rpggen=Rpggen)
+
+class Row:
+   start = -1
+   stop = -1
+   result = ""
+   used = False
+    
+   def smallStr(self):
+      return '[%d-%d: %s]' % (self.start, self.stop, self.result)
 
 # execute only if run as a script
 if __name__ == "__main__":

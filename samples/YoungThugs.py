@@ -13,12 +13,12 @@ from Traveller import Attribute, Traveller
 class YoungThug(Character):
 
    meleeSkills = Table("MeleeSkills", ['Melee Combat (Blugeoning)','Melee Combat (Natural)',
-		                                 'Melee Combat (Piercing)', 'Melee Combat (Slashing)'])
+		                                   'Melee Combat (Piercing)', 'Melee Combat (Slashing)'],unique=True)
    weaponSkills = Table("WeaponsSkills", ['Gun Combat (Energy Rifle)','Gun Combat (Energy Pistol)',
-		                                    'Gun Combat (Shotgun)', 'Gun Combat (Slug Rifle)',
-		                                    'Gun Combat (Slug Pistol)'])
+		                                      'Gun Combat (Shotgun)', 'Gun Combat (Slug Rifle)',
+		                                      'Gun Combat (Slug Pistol)'],unique=True)
    otherSkills = Table("OtherSkills", ['Bribery','Gambling',
-		                                 ])
+		                                 ],unique=True)
    def __init__(self):
    	  super().__init__()
 

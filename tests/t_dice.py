@@ -1,3 +1,4 @@
+import logging
 import sys
 import unittest
 
@@ -11,6 +12,7 @@ class TestDiceRolls(unittest.TestCase):
    def setUp(self):
       # Dice roller always returns this number, so we know what the results should be.
       Rpggen.testData = 2
+      #logging.basicConfig(level=logging.DEBUG)
 
    def test_1(self):
       result = Rpggen.roll('1d6')
