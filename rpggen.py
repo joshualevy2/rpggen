@@ -321,18 +321,18 @@ class Rpggen:
        d66match = re.search(r'[dD]6(6+)',diceStr)
        if d66match is not None and Rpggen.getCustomization('d66support', False):
           return Rpggen.rollconcat(diceStr)   
-       match = re.search(r'([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
+       match = re.search(r'([0-9]+)?o?([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
        if match == None:
            raise ValueError('%s was not a dice roll' % diceStr)
        #print('DEBUG: %s %s %s %s' % (match.group(1),match.group(2),match.group(3),match.group(4)))
        total = 0
-       diceNum = match.group(1)
+       diceNum = match.group(2)
        if diceNum is None :
            diceNum = 1
        else:
            diceNum = int(diceNum)
        try:
-          diceSize = int(match.group(3))
+          diceSize = int(match.group(4))
        except:
           raise ValueError('Error in dice size while rolling %s.' % diceStr)
        for ii in range(diceNum) :
@@ -341,7 +341,7 @@ class Rpggen:
            else:
               # TODO if testData out of range
               total += Rpggen.testData
-       diceAdjustment = match.group(4)
+       diceAdjustment = match.group(5)
        if diceAdjustment is not None :
            try:
               adjustment = int(diceAdjustment)
