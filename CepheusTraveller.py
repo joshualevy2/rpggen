@@ -157,6 +157,9 @@ class Character(Character):
        parsed = command.split(' ')
        Traveller.roll() 
 
+   def doBasicTraining(self, character):
+      for skill in self.config['ServiceDevelopment'].results():
+         character.skills.append(Attribute(skill,1)) 
 
 if __name__ == '__main__':
    print('Test Traveller Code:')

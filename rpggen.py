@@ -36,6 +36,9 @@ class Rpggen:
     testData = None
     customizations = {}
 
+    def clear():
+       for (name, tab) in Rpggen.tables.items():
+          tab.clear()
 
     def getCustomization(name, default=None):
       '''Returns the customization value, or the second argument, if that

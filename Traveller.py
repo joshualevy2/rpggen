@@ -59,8 +59,11 @@ class Career():
       self.config['name'] = name
 
    def doBasicTraining(self, character):
-      for skill in self.config['ServiceDevelopment'].results():
-         character.skills.append(Attribute(skill,1))      
+      # TODO put in seperate function
+      which = self.whichAdvantage.use()
+      print('using this table: %s' % which)
+      adv = self.roll(which)
+      print('add new %s' % adv)     
 
    def doOneTerm(self, character):
       '''Adds one term to a character.
@@ -71,7 +74,8 @@ class Career():
       if character.terms == 7:
           return 'Aged out of career'
       character.terms += 1
-
+      
+      # TODO use funciton here
       which = self.whichAdvantage.use()
       print('using this table: %s' % which)
       adv = self.roll(which)
