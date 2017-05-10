@@ -1,7 +1,9 @@
 
-from GetFromWeb import GetFromWeb
+import logging
 import random
 import re
+
+from GetFromWeb import GetFromWeb
 from rpggen import Rpggen, Table
 
 class Attribute():
@@ -36,7 +38,7 @@ class Career():
    #name = ''
    #config = {}
    whichAdvantage = Table("WhichAdvantage", 
-                          ['MaterialBenefits','CashBenefits','PersonalDevelopment'
+                          ['MaterialBenefits','CashBenefits','PersonalDevelopment',
                            'ServiceDevelopment'])
 
    def __init__(self,config):
@@ -51,8 +53,9 @@ class Career():
    def addData(self,name,data):
       self.config[name] = data
 
+   # TODO remove this? use addData+Table
    def addTable(self,name,data):
-      self.config[name] = Table(data)
+      self.config[name] = Table(name,data)
 
    def changeName(self,name):
       self.name = name
@@ -62,7 +65,7 @@ class Career():
       # TODO put in seperate function
       which = self.whichAdvantage.use()
       print('using this table: %s' % which)
-      adv = self.roll(which)
+      adv = Rpggen.finduse(which)
       print('add new %s' % adv)     
 
    def doOneTerm(self, character):
@@ -70,21 +73,22 @@ class Career():
          Returns None if the career continues, or a string if the career
          ends, the string stating why the career ends.
       '''
-      mustEnd = None
+      logging.debug('entering doOneTerm')
       if character.terms == 7:
           return 'Aged out of career'
       character.terms += 1
+      character.age += 4
       
       # TODO use funciton here
       which = self.whichAdvantage.use()
       print('using this table: %s' % which)
-      adv = self.roll(which)
+      adv = Rpggen.finduse(which)
       print('add new %s' % adv)
       
       if self.roll('reenlistment'):
          return 'Could not reenlist.'
          
-      return mustEnd
+      return None
 
    def roll(self, name):
       '''Roll on the named item for this career.
@@ -143,6 +147,18 @@ class Character():
       pocket = self.money['pocket']
       bank = self.money['bank']
       return pocket + bank
+
+   def createUpToCareer(self):
+      self.name = GetFromWeb.get('names')
+      self.lastCareer = "No Career"
+      self.terms = 0
+      self.age = 18
+      self.str = Rpggen.roll('2d6')
+      self.dex = Rpggen.roll('2d6')
+      self.end = Rpggen.roll('2d6')
+      self.int = Rpggen.roll('2d6')
+      self.edu = Rpggen.roll('2d6')
+      self.soc = Rpggen.roll('2d6')      
 
    def dict(self):
       '''Returns the character in dictionary format
@@ -260,7 +276,7 @@ class Traveller():
 
    @classmethod
    def roll(cls, dice=None, target=None, dm=None):
-      #print('roll(%s, %s, %s)' % (dice,target,dm))
+      logging.debug('roll(%s, %s, %s)' % (dice,target,dm))
       got = Rpggen.roll("2d6")
       if dice is not None:
          if type(dice) == int:
@@ -268,11 +284,12 @@ class Traveller():
          if type(dice) == str:
             got = Rpggen.roll(dice)
 
-      #print('raw roll %d' % got)
+      logging.debug('raw roll %d' % got)
       dmValue = 0
-      if type(dm) == int:
+      if dm is not None:
+       if type(dm) == int:
          got = got + dm
-      if dm is not None and type(dm) == str:
+       if type(dm) == str:
          dmMatch = re.search(r"^([+-]?)([0123456789]+)$", dm)
          dmDir = dmMatch.group(1)
          if dmDir is None: dmDir = '+'
@@ -294,9 +311,9 @@ class Traveller():
       if targetCmp is None:
          return got == targetNum
       elif targetCmp == '+':
-         return got >= targetNum
-      elif targetCmp == '-':
          return got <= targetNum
+      elif targetCmp == '-':
+         return got >= targetNum
       else:
          raise ValueError('In roll(), target string (%s) is malformed.' % target)
 

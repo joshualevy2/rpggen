@@ -133,6 +133,7 @@ class Rpggen:
            re.split(r'[d+-]',name)  # JCL used to have backslashes before + and -
            return str(Rpggen.roll(name))
         except:   
+           print(Table.names())
            #print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
@@ -345,6 +346,10 @@ class Table:
       if len(self.rows) == 0:
          raise ValueError('Table %s has no rows in it.' % printName)
 
+   @classmethod
+   def names(cls):
+       return ", ".join(Rpggen.tables.keys())
+
    def results(self):
       results = []
       for row in self.rows:
@@ -356,6 +361,7 @@ class Table:
       
    def use(self):
       self.internal_check()
+      logging.debug('%s %s %d' % (self.id, self.dice, len(self.rows)))
       roll = Rpggen.roll(self.dice)
       for row in self.rows:
          if row.start <= roll <= row.stop:

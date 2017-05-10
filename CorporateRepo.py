@@ -1,3 +1,4 @@
+import logging
 
 from CepheusTraveller import Career, CepheusTraveller, Character
 from rpggen import Rpggen, Table
@@ -42,6 +43,7 @@ class CorporateRepo(Career):
 if __name__ == '__main__':    
    # Initialize the CepheusTraveller environment, which also initializes the 
    # basic Traveller environment.
+   logging.basicConfig(level=logging.INFO)
    cepheusTraveller = CepheusTraveller()
  
    # Initialize the CorporateRepo career
@@ -52,6 +54,7 @@ if __name__ == '__main__':
  
    # Do all the pre-career character generation steps.
    crPerson.createUpToCareer()
+   crPerson.lastCareer = 'Corporate Repo'
  
    # Do basic training for this person
    crCareer.doBasicTraining(crPerson)
