@@ -4,12 +4,12 @@ import unittest
 import json
 
 sys.path.append('..')
-from CepheusTraveller import Character
+from CepheusEngine import Character
 from GetFromWeb import GetFromWeb
 from rpggen import Rpggen, Select, Table
 from Traveller import Attribute, Traveller
 
-# TODO Why not CepheusTraveller.Character?
+# TODO Why not CepheusEngine.Character?
 class YoungThug(Character):
 
    version = '0.1'

@@ -4,25 +4,9 @@ import re
 from rpggen import Table, Rpggen
 from Traveller import Attribute, Career, Character, Traveller
 
-class CepheusTraveller():
-
-   law2combat = { 
-    "No Law" : "Gun Combat-0",
-    "Low Law" : "Gun Combat-0",
-    "Medium Law" : "Gun Combat-0",
-    "High Law" : "Melee Combat-0"
-   }
-   
-   trade2skill = { 
-    "1" : "rock.",
-    "2" : "boulders.",
-    "3" : "rock with some dust.",
-    "4" : "boulders with some dust.",
-    "5" : "rock core with ice and dust on the outside."
-   }
+class CepheusEngine():
 
    def __init__(self):
-      #Rpggen.load("CepheusTraveller.rpggen")
       return
        
 class CorporateRepo(Career):

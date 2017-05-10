@@ -3,9 +3,8 @@ import unittest
 
 sys.path.append('..')
 
-from CepheusTraveller import Character
+from CepheusEngine import Character
 from rpggen import Rpggen
-from Traveller import Traveller
 
 class TestMoney(unittest.TestCase):
 

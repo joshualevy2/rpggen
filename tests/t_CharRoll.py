@@ -2,7 +2,7 @@ import sys
 import unittest
 
 sys.path.append('..')
-from CepheusTraveller import CepheusTraveller, Character
+from CepheusEngine import CepheusEngine, Character
 from rpggen import Rpggen
 
 class TestCharacterRoll(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestCharacterRoll(unittest.TestCase):
    def setUp(self):
       # Dice roller always returns this number, so we know what the results should be.
       Rpggen.testData = 2
-      cepheusTraveller = CepheusTraveller()
+      cepheusEngine = CepheusEngine()
       self.corpRepo = Character()
       self.corpRepo.int = 7
       self.corpRepo.dex = 12

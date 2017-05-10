@@ -1,6 +1,6 @@
 import logging
 
-from CepheusTraveller import Career, CepheusTraveller, Character
+from CepheusEngine import Career, CepheusEngine, Character
 from rpggen import Rpggen, Table
 from Traveller import Traveller
 
@@ -41,10 +41,10 @@ class CorporateRepo(Career):
    	return result
 
 if __name__ == '__main__':    
-   # Initialize the CepheusTraveller environment, which also initializes the 
+   # Initialize the CepheusEngine environment, which also initializes the 
    # basic Traveller environment.
    logging.basicConfig(level=logging.INFO)
-   cepheusTraveller = CepheusTraveller()
+   cepheusEngine = CepheusEngine()
  
    # Initialize the CorporateRepo career
    crCareer = CorporateRepo()

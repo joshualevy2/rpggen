@@ -1,7 +1,7 @@
 import unittest
 import sys
 sys.path.append('..')
-from CepheusTraveller import Career, CepheusTraveller, Character
+from CepheusEngine import Career, CepheusEngine, Character
 from CorporateRepo import CorporateRepo
 from rpggen import Rpggen
 from Traveller import Traveller
@@ -14,9 +14,9 @@ class TestCareer(unittest.TestCase):
    def setUp(self):
       # Dice roller always returns this number, so we know what the results should be.
       Rpggen.testData = 2 
-      # Initialize the CepheusTraveller environment, which also initializes the 
+      # Initialize the CepheusEngine environment, which also initializes the 
       # basic Traveller environment.
-      self.cepheusTraveller = CepheusTraveller()
+      self.cepheusEngine = CepheusEngine()
  
       # Initialize the CorporateRepo career
       self.crCareer = CorporateRepo()
@@ -36,8 +36,6 @@ class TestCareer(unittest.TestCase):
        Rpggen.testData = 4
        result = self.crCareer.roll('reenlistment')
        self.assertTrue(result)         
-
-
 
 
 if __name__ == '__main__':

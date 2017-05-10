@@ -3,9 +3,8 @@ import unittest
 import json
 
 sys.path.append('..')
-from CepheusTraveller import Character
+from CepheusEngine import Character
 from rpggen import Rpggen
-from Traveller import Traveller
 
 class TestPsi(unittest.TestCase):
 
