@@ -131,7 +131,9 @@ if __name__ == '__main__':
     yt = YoungThug()
     yt.generate()
     print(yt.strSmall())
-    #print(yt.dict())
+    print(Rpggen.toJson(yt))
+    #print(json.dumps(yt, default=lambda o: o.__dict__, 
+    #                 sort_keys=True, indent=4))
 
-    #str = YoungThug.htmlPage()
-    #print(str)
+    str = YoungThug.htmlPage()
+    print(str)

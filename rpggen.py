@@ -251,6 +251,10 @@ class Rpggen:
               total += Rpggen.testData
        return total
 
+    def toJson(obj):
+       return json.dumps(obj, default=lambda o: o.__dict__, 
+                     sort_keys=True, indent=4)
+       
     def chars(num, fro=string.ascii_lowercase) :
         result = ""
         for ii in range(num) :
