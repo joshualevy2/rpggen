@@ -24,6 +24,11 @@ class Attribute():
       #print('DEBUG (%s,%s) -> [%s|%s|%s]' % (name, value, self.name, self.specific, self.value))
       if self.useCost:
          self.cost = cost
+   def fullName(self):
+      if self.specific is None:
+         return self.name
+      else:
+         return '%s(%s)' % (self.name,self.specific)
 
    def strAttr(self):
       specific = ''
@@ -64,9 +69,8 @@ class Career():
    def doBasicTraining(self, character):
       # TODO put in seperate function
       which = self.whichAdvantage.use()
-      print('using this table: %s' % which)
       adv = Rpggen.finduse(which)
-      print('add new %s' % adv)     
+      character.changeStr(adv)    
 
    def doOneTerm(self, character):
       '''Adds one term to a character.
@@ -81,9 +85,8 @@ class Career():
       
       # TODO use funciton here
       which = self.whichAdvantage.use()
-      print('using this table: %s' % which)
       adv = Rpggen.finduse(which)
-      print('add new %s' % adv)
+      character.changeStr(adv)   
       
       if self.roll('reenlistment'):
          return 'Could not reenlist.'
@@ -137,6 +140,25 @@ class Career():
 
 class Character():
 
+   attrShort = ['dex','end','int','edu','str','soc','psi']
+
+   def __init__(self):
+      self.name = ''
+      self.lastCareer = ''
+      self.terms = -1
+      self.age = -1
+      self.str = -1
+      self.dex = -1
+      self.end = -1
+      self.int = -1
+      self.edu = -1
+      self.soc = -1
+      self.psi = None
+      self.skills = []
+      self.equipment = []
+      self.money = { 'pocket': 0, 'bank': 0, 'pension': 0}
+      self.history = []
+
    def addToSkill(self, name, value):
       for skill in self.skills:
          if name == skill.name:
@@ -174,6 +196,13 @@ class Character():
       if attr == 'soc': return Traveller.dm(self.soc)
       if attr == 'psi': return Traveller.dm(self.psi)
 
+
+   def getSkill(self, name):
+      for skill in self.skills:
+         if skill.fullName() == name:
+            return skill
+      return None
+
    def roll(self, attr, target):
       return Traveller.roll(target=target, dm=self.dm(attr))
       
@@ -182,6 +211,11 @@ class Character():
       for skill in self.skills:
          skillNames.append(skill.name)
       return skillNames
+
+   def strHistory(self):
+      result = 'History:\n'
+      for history in self.history:
+         print(history)
 
    def strSmall(self):
        result = ''

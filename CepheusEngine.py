@@ -1,5 +1,6 @@
 
 from GetFromWeb import GetFromWeb
+import logging
 import re
 from rpggen import Table, Rpggen
 from Traveller import Attribute, Career, Character, Traveller
@@ -22,44 +23,31 @@ class CorporateRepo(Career):
       
 class Character(Character):
 
-   skills = [ 'Admin','Gun Combat (Cascade Skill)','Vehicle (Cascade Skill)','Advocate',
+   skills = [ 'Admin','GunCombat(CascadeSkill)','Vehicle(CascadeSkill)','Advocate',
               'Archery',
-              'Aircraft (Cascade Skill)','Animals (Cascade Skill)','Energy Pistol',
-              'Grav Vehicle','Farming','Energy Rifle','Rotor Aircraft','Riding',
-              'Shotgun','Winged Aircraft','Survival','Slug Pistol','Mole',
-              'Veterinary Medicine','Slug Rifle','Tracked Vehicle','Athletics',
-              'Gunnery (Cascade Skill)','Watercraft (Cascade Skill)','Battle Dress',
-              'Bay Weapons','Motorboats','Bribery','Heavy Weapons','Ocean Ships',
-              'Broker', 'Screens', 'Sailing Ships', 'Carousing', 'Spinal Mounts',
+              'Aircraft (CascadeSkill)','Animals (CascadeSkill)','EnergyPistol',
+              'GravVehicle','Farming','Energy Rifle','RotorAircraft','Riding',
+              'Shotgun','Winged Aircraft','Survival','SlugPistol','Mole',
+              'Veterinary Medicine','SlugRifle','TrackedVehicle','Athletics',
+              'Gunnery(CascadeSkill)','Watercraft (CascadeSkill)','BattleDress',
+              'Bay Weapons','Motorboats','Bribery','HeavyWeapons','OceanShips',
+              'Broker', 'Screens', 'Sailing Ships', 'Carousing', 'SpinalMounts',
               'Submarine', 'Comms', 'Turret Weapons', 'Wheeled Vehicle', 'Computer',
-              'Melee Combat (Cascade Skill)', 'Demolitions', 'Bludgeoning Weapons',
-              'Electronics', 'Natural Weapons', 'Engineering', 'Piercing Weapons',
-              'Gambling', 'Slashing Weapons', 'Gravitics', 'Jack-of-All-Trades',
+              'MeleeCombat(CascadeSkill)', 'Demolitions', 'BludgeoningWeapons',
+              'Electronics', 'NaturalWeapons', 'Engineering', 'Piercing Weapons',
+              'Gambling', 'SlashingWeapons', 'Gravitics', 'Jack-of-All-Trades',
               'Leadership', 'Linguistics', 'Liaison', 'Mechanics', 'Medicine',
-              'Navigation', 'Piloting', 'Recon', 'Sciences (Cascade Skill)', 'Life Sciences',
-              'Physical Sciences', 'Social Sciences', 'Space Sciences', 'Steward',
-              'Streetwise', 'Tactics', 'Zero-G']
+              'Navigation', 'Piloting', 'Recon', 'Sciences(CascadeSkill)', 'LifeSciences',
+              'PhysicalSciences', 'SocialSciences', 'SpaceSciences', 'Steward',
+              'Streetwise','Tactics', 'Zero-G']
 
    skillTab = Table('skills', skills)
 
    def __init__(self):
-      self.name = ''
-      self.lastCareer = ''
-      self.terms = -1
-      self.age = -1
-      self.str = -1
-      self.dex = -1
-      self.end = -1
-      self.int = -1
-      self.edu = -1
-      self.soc = -1
-      self.psi = None
-      self.skills = []
-      self.equipment = []
-      self.money = { 'pocket': 0, 'bank': 0, 'pension': 0}
-      self.history = []
+      super().__init__()
       
    def createUpToCareer(self):
+      print(self.__dict__)
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"
       self.terms = 0
@@ -70,6 +58,7 @@ class Character(Character):
       self.int = Rpggen.roll('2d6')
       self.edu = Rpggen.roll('2d6')
       self.soc = Rpggen.roll('2d6')
+      self.history.append('At 18 has: %s' % self.strUpp())
 
    def createRandomlyTopdown(self):
        self.createUpToCareer()
@@ -87,24 +76,28 @@ class Character(Character):
            skillName = Rpggen.finduse("skills")
            self.skills.append(Attribute(skillName, skillLevel))
 
-   def changeStr(command):
-        if type(command) == list:
-            raise ValueError('For changeCharacter, command can not be a list (yet).')
-        parts = command.split(' ')
-        print('In changeEnglish: %s' % parts)
-        # ''+1 Dex' -> 'attr, dex, add 1'
-        if parts[1].lower() in Traveller.attrShort:
-            change(('attr', parts[1], 'add', str(parts[0])))
+   def changeStr(self, command):
+      logging.info('changeStr(%s)' % str(command))
+      self.history.append(command)
+      if type(command) == list:
+         raise ValueError('For changeCharacter, command can not be a list (yet).')
+      parts = command.split(' ')
+      logging.info('In changeStr: %s' % "|".join(parts))
+      if len(parts) == 1:
+         self.change(('skill', parts[0], 'add', '1')) 
+      elif len(parts) ==2:
+         # ''+1 Dex' -> 'attr, dex, add 1'
+         if parts[1].lower() in Character.attrShort:
+            self.change(('attr', parts[1], 'add', str(parts[0])))
 
-        # '10' , '$10', 'cr10' -> money onhand add 10
-        if parts[1][0] == '$' or parts[1][0:1].lower() == "cr":
-            change(('money', parts[1], 'add', str(parts[0])))
+         # '10' , '$10', 'cr10' -> money onhand add 10
+         if parts[1][0] == '$' or parts[1][0:1].lower() == "cr":
+            self.change(('money', parts[1], 'add', str(parts[0])))
 
-        if parts[1] in skills:
-            change(('skill', parts[0], 'add', '1'))            
+                       
 
-   def change(self,command):
-      print('Changing %s for %s' % (command,self.name))
+   def change(self, command):
+      logging.info('Changing %s for %s' % ("|".join(command),self.name))
       if type(command) == list:
          raise ValueError('For changeCharacter, command can not be a list (yet).')
       if command[0] == "attr":
@@ -130,7 +123,11 @@ class Character(Character):
             if command[2] == "add":
                self.psi += int(command[3])
       elif command[0] == "skill":
-         a = 0
+         attr = self.getSkill(command[1])
+         if attr is None:
+            self.skills.append(Attribute(command[1],1))
+         else:
+            attr.value += 1
       elif command[0] == "money":
          a = 0
       elif command[0] == "stuff":
@@ -140,12 +137,12 @@ class Character(Character):
            print('Could not change %s for %s' % (command,self.name))
 
    def checkStr(command):
-       parsed = command.split(' ')
-       Traveller.roll() 
+      parsed = command.split(' ')
+      Traveller.roll() 
 
    def doBasicTraining(self, character):
       for skill in self.config['ServiceDevelopment'].results():
-         character.skills.append(Attribute(skill,1)) 
+         character.changeStr(skill) 
 
 if __name__ == '__main__':
    print('Test Traveller Code:')

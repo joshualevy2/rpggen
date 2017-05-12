@@ -14,16 +14,16 @@ class CorporateRepo(Career):
              'advancement': 'Int 6+',
              'reenlistment': '5+'})
       self.addData('Ranks',
-      	          ['Crew/Agent', 'Lead', 'Manager','Sr. Manager','Director',
-      	           'Sr. Director','Executive'])
+      	          ['Crew/Agent', 'Lead', 'Manager','Sr.Manager','Director',
+      	           'Sr.Director','Executive'])
       self.addData('Skills',
-      	          ['Streetwise', None, 'Gun Combat', None, None, None, None])      
+      	          ['Streetwise', None, 'GunCombat', None, None, None, None])      
       self.addTable('MaterialBenefits',
-      	           ['+1 Str', '+1 Dex', '+1 End','Melee Combat','+1 Edu','Athletics'])
+      	           ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics'])
       self.addTable('CashBenefits',
-      	           ['+1 Str', '+1 Dex', '+1 End','Melee Combat','+1 Edu','Athletics'])      	                 
+      	           ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics'])      	                 
       self.addTable('PersonalDevelopment',
-      	           ['+1 Str', '+1 Dex', '+1 End','Melee Combat','+1 Edu','Athletics'])
+      	           ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics'])
       self.addTable('ServiceDevelopment',
       	           ['Streetwise', 'Engineering', 'Bribery','Liaison','Recon','Mechanics'])
       self.addTable('SpecialistDevelopment',

@@ -9,6 +9,10 @@ pip install bottle
 ```
 
 To develop, it requires unittest, which is part of default Python.
+Some of the sample applications use yattag, which can be installed using pip:
+```shell
+pip install yattag
+```
 
 # Running Rpggen Programs
 

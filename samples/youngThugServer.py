@@ -25,7 +25,9 @@ def youngthug():
    yt = YoungThug()
    yt.generate()
    if request.query.format == '' or request.query.format == 'html':
-      return '<pre>'+yt.strSmall()+'</pre>'
+      return yt.html()
+   elif request.query.format == 'htmlText':
+    return yt.htmlText()      
    elif request.query.format == 'text':
    	return yt.strSmall()
    elif request.query.format == 'htmlPage':
