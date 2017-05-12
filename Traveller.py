@@ -51,7 +51,7 @@ class Career():
          self.name = config['name']
          self.config = config
          self.log = []
-         self.history = []
+         # JCL self.history = []
       except:
          raise ValueError('Config did not have the items required.') 
 
@@ -68,6 +68,7 @@ class Career():
 
    def doBasicTraining(self, character):
       # TODO put in seperate function
+      character.history.append('In basic training')
       which = self.whichAdvantage.use()
       adv = Rpggen.finduse(which)
       character.changeStr(adv)    
@@ -78,6 +79,7 @@ class Career():
          ends, the string stating why the career ends.
       '''
       logging.debug('entering doOneTerm')
+      character.history.append('Starting a new term.')
       if character.terms == 7:
           return 'Aged out of career'
       character.terms += 1
@@ -171,6 +173,7 @@ class Character():
       return pocket + bank
 
    def createUpToCareer(self):
+      self.history.append('Birth')
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"
       self.terms = 0
@@ -215,7 +218,8 @@ class Character():
    def strHistory(self):
       result = 'History:\n'
       for history in self.history:
-         print(history)
+         result += history+'\n'
+      return result
 
    def strSmall(self):
        result = ''

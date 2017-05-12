@@ -66,4 +66,5 @@ if __name__ == '__main__':
    crPerson.endReason = endReason
 
    print(crPerson.strSmall())
+   print(crPerson.strHistory())
    #cr.printTest()

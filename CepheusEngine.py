@@ -47,7 +47,7 @@ class Character(Character):
       super().__init__()
       
    def createUpToCareer(self):
-      print(self.__dict__)
+      self.history.append('Birth')
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"
       self.terms = 0
@@ -61,6 +61,7 @@ class Character(Character):
       self.history.append('At 18 has: %s' % self.strUpp())
 
    def createRandomlyTopdown(self):
+       self.history.append('--> Using Topdown randomly')
        self.createUpToCareer()
        self.terms = Rpggen.roll('1d7')
        self.age = 18 + self.terms*4
@@ -141,6 +142,7 @@ class Character(Character):
       Traveller.roll() 
 
    def doBasicTraining(self, character):
+      self.history.append('In basic training')
       for skill in self.config['ServiceDevelopment'].results():
          character.changeStr(skill) 
 
