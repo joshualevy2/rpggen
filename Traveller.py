@@ -59,8 +59,15 @@ class Career():
       self.config[name] = data
 
    # TODO remove this? use addData+Table
-   def addTable(self,name,data):
-      self.config[name] = Table(name,data)
+   def addTable(self,name,tab=None):
+      '''Add this table to the career creation system.
+         If two areguments are passed in, use the first as the name.
+         Otherwise, use the table's id as the name.
+      '''
+      if tab is None:
+         tab = name
+         name = tab.id
+      self.config[name] = tab
 
    def changeName(self,name):
       self.name = name
@@ -81,10 +88,21 @@ class Career():
       logging.debug('entering doOneTerm')
       character.history.append('Starting a new term.')
       if character.terms == 7:
-          return 'Aged out of career'
+         return 'Aged out of career.'
+      if self.roll('survival'):
+         return 'Did not survive.'
       character.terms += 1
       character.age += 4
-      
+
+      if self.rank == 0:
+         if self.roll('commission'):
+            character.history.append('Was commissioned')
+            self.rank = 1
+      else:
+         if self.roll('advancement'):
+            character.history.append('Advanced in rank.')
+            self.rank += 1
+
       # TODO use funciton here
       which = self.whichAdvantage.use()
       adv = Rpggen.finduse(which)
@@ -156,6 +174,7 @@ class Character():
       self.edu = -1
       self.soc = -1
       self.psi = None
+      self.rank = 0
       self.skills = []
       self.equipment = []
       self.money = { 'pocket': 0, 'bank': 0, 'pension': 0}
@@ -225,7 +244,10 @@ class Character():
        result = ''
        result += ('Name: %s        %s  %d years old\n' % 
                   (self.name, self.strUpp(),self.age))
-       result += '%s (%d term%s)              Cr%d\n' % (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), self.availableMoney())
+       result += ('%s (%d term%s) ended up with rank of %d    Cr%d\n' % 
+                  (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), 
+                   self.rank(),
+                   self.availableMoney()))
        result += '\n'
        result += self.strSkills()+'\n'
        result += 'Equipment: %s\n' % ', '.join(self.equipment) 

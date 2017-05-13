@@ -17,19 +17,19 @@ class CorporateRepo(Career):
       	          ['Crew/Agent', 'Lead', 'Manager','Sr.Manager','Director',
       	           'Sr.Director','Executive'])
       self.addData('Skills',
-      	          ['Streetwise', None, 'GunCombat', None, None, None, None])      
-      self.addTable('MaterialBenefits',
-      	           ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics'])
-      self.addTable('CashBenefits',
-      	           ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics'])      	                 
-      self.addTable('PersonalDevelopment',
-      	           ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics'])
-      self.addTable('ServiceDevelopment',
-      	           ['Streetwise', 'Engineering', 'Bribery','Liaison','Recon','Mechanics'])
-      self.addTable('SpecialistDevelopment',
-      	           ['Zero-G', 'Comms', 'Admin','Electronics','Leadership','Jack-o-Trades'])
-      self.addTable('AdvancedDevelopment',
-      	           ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?'])
+      	          ['Streetwise', None, 'GunCombat', None, None, None, None])     
+      self.addTable(Table('MaterialBenefits',
+      	                 ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
+      self.addTable(Table('CashBenefits',
+      	                 ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))      	                 
+      self.addTable(Table('PersonalDevelopment',
+      	                 ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
+      self.addTable(Table('ServiceDevelopment',
+      	                 ['Streetwise', 'Engineering', 'Bribery','Liaison','Recon','Mechanics']))
+      self.addTable(Table('SpecialistDevelopment',
+      	                 ['Zero-G', 'Comms', 'Admin','Electronics','Leadership','Jack-o-Trades']))
+      self.addTable(Table('AdvancedDevelopment',
+      	                 ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?']))
   
  #  def doBasicTraining(self, character):
  #     character.change(('skill','add','Liaison', '0'))
