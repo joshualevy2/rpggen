@@ -204,6 +204,31 @@ class Rpggen:
             # TODO if table is already there.
             Rpggen.tables[d['id']] = d
 
+    def loadLt(filename):
+       '''Loads an rpggen file into the program.
+          Throws an exception if the file is not found.
+       '''
+       tableName = None
+       entries = []
+       removeFirstToken = False
+       with open(filename) as file:
+          content = file.readlines()
+       for line in content:
+          line = line.strip()
+          if not line[0] == '#':
+             if removeFirstToken:
+                # Cuts off the first token (whitespace seperated) from line. Keeps the rest.
+                entries.append(line.split(None, 1)[1])
+             else:
+                entries.append(line)
+          else:
+             if 'RemoveFirstToken' in line:
+                removeFirstToken = True
+             if 'Name' in line:
+                tableName = line.split(None, 2)[2]
+       tab = Table(tableName, entries)
+       return tab
+
     def roll(diceStr):
        d66match = re.search(r'[dD]6(6+)',diceStr)
        if d66match is not None and Rpggen.getCustomization('d66support', False):
@@ -358,7 +383,10 @@ class Table:
       
    def roll(self):
       return self.use()
-      
+ 
+   def rollRepeatedly(self, num, unique=True):
+      return self.useRepeatedly(num, unique)
+
    def use(self):
       self.internal_check()
       logging.debug('%s %s %d' % (self.id, self.dice, len(self.rows)))
@@ -384,6 +412,19 @@ class Table:
                return finalResult
             else :
                return ''
+
+   def useRepeatedly(self, num, unique=True):
+      results = []
+      wasunique = self.unique
+      if unique:
+         self.clear()
+         self.unique = True
+      for nn in range(num):
+         results.append(self.use())
+      if not wasunique and unique:
+         self.clear()
+      self.unique = wasunique
+      return results
 
    def clear(self):
       for row in self.rows:
