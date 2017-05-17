@@ -1,0 +1,52 @@
+
+[
+{ 
+    "id": "WeaponsBlugeoning",
+    "1": "Metal Pipe",
+    "2": "Club",
+    "3": "Sporting Bat (Baseball, Cricket, or Similar)",
+    "4": "Wrench or similar tool",
+    "5": "Blackjack"
+},
+{ 
+    "id": "WeaponsPiercing",
+    "1-12": "Small Knife",
+    "13-21": "Ice Pick",
+    "22-27": "Shiv"
+},
+{ 
+    "id" : "WeaponsSlashing",
+    "1-10": "Big Knife",
+    "11-14": "Short Sword (or Katana)"
+},
+{ 
+    "id": "WeaponsEnergyPistol",
+    "1-10": "Laser Pistol"
+},
+{ 
+    "id": "WeaponsEnergyRifle",
+    "1-10": "Laser Rifle",
+    "11": "Plasma Rifle"
+},
+{ 
+    "id" : "WeaponsShotgun",
+    "1-10": "Single-Shot Shotgun",
+    "11-12": "Automatic Shotgun",
+    "13": "Fully Automatic Shotgun",
+    "14-16": "Double Barreled Shotgun"
+},
+{ 
+    "id" : "WeaponsSlugRifle",
+    "1-10": "Single-Shot Rifle",
+    "11-12": "Semiauto Rifle",
+    "13": "Combat Rifle",
+    "14": "Gauss Pistol"
+},
+{
+    "id": "WeaponsSlugPistol",
+    "1": "Revolver",
+    "2": "Automatic Pistol",
+    "3": "Needler",
+    "4": "Gauss Pistol"
+}
+]

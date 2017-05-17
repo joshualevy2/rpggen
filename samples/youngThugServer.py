@@ -15,11 +15,10 @@ from rpggen import Rpggen, Table
 def r():
     return str(request.query.format =='')
 
-@route('/info')
-def info():
+@route('/yt/help')
+def ytHelp():
     return 'This server returns one young thug in plain text format'
 
-@route('/youngthug')
 @route('/yt')
 def youngthug():
    yt = YoungThug()

@@ -15,12 +15,12 @@ class YoungThug(Character):
 
    version = '0.1'
 
-   meleeSkills = Table("MeleeSkills", ['Melee Combat (Blugeoning)','Melee Combat (Natural)',
-		                                 'Melee Combat (Piercing)', 'Melee Combat (Slashing)'],unique=True)
+   meleeSkills = Table("MeleeSkills", ['Melee Combat (Blugeoning)', 'Melee Combat (Piercing)',
+		                                   'Melee Combat (Slashing)'], unique=True)
    weaponSkills = Table("WeaponsSkills",
-                        ['Gun Combat (Energy Rifle)','Gun Combat (Energy Pistol)',
-		                   'Gun Combat (Shotgun)', 'Gun Combat (Slug Rifle)',
-		                   'Gun Combat (Slug Pistol)'],
+                        ['Gun Combat (EnergyRifle)','Gun Combat (EnergyPistol)',
+		                   'Gun Combat (Shotgun)', 'GunCombat (SlugRifle)',
+		                   'Gun Combat (SlugPistol)'],
                         unique=True)
 
    otherSkills = Table("OtherSkills", 
@@ -28,11 +28,22 @@ class YoungThug(Character):
                         'Medicine', 'Recon', 'Streetwise', 'Tactics'],
 		                 unique=True)
 
+   possessionsTable = Table('PossetionsTable',
+                            ['Key', 'Legal Drugs', 'Illegal Drugs', 'Gambling Materials',
+                             'Gear Bag', 'Shades', 'Pet', 'Religious Figurine', 'Feather',
+                             'Rock'])
+
    def __init__(self):
-        super().__init__()
-        Rpggen.clear()
+      super().__init__()
+      Rpggen.clear()
+      try:
+         Rpggen.load("YoungThugs.rpggen")
+      except:
+         print('Warning: could not find data file YoungThugs.rpggen.') 
+         print(sys.exc_info()[1])       
 
    def generate(self):
+      Rpggen.clear()
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"    
       self.str = Rpggen.roll('2d5+2')
@@ -42,22 +53,29 @@ class YoungThug(Character):
       self.edu = Rpggen.roll('2d2')
       self.soc = Rpggen.roll('2d3')
 
+      try:
+         personalityTable = Rpggen.loadLt("PersonalityTraits.lt")
+      except:
+         personalityTable = None
+      if personalityTable is not None:
+         self.personality = personalityTable.rollRepeatedly(3, unique=True)
+
       level = Select.choose(['teen','start', 'young'])
       if level == 'teen':
-       self.age = Rpggen.roll('1d3+15')
-       self.terms = 0  
-       numSkills = 3   # TODO right number?     
+         self.age = Rpggen.roll('1d3+15')
+         self.terms = 0  
+         numSkills = 3   # TODO right number?     
       elif level == 'start':
-       self.age = Rpggen.roll('1d3+17')
-       self.terms = 0     
-       numSkills = 5   #  
+         self.age = Rpggen.roll('1d3+17')
+         self.terms = 0     
+         numSkills = 5   #  
       elif level == 'young':
-       self.lastCareer = "Rogue"   
-       self.age = Rpggen.roll('1d3+21')
-       self.terms = 1
-       numSkills = 9 # TODO right number?  Basic Training plus above.
+         self.lastCareer = "Rogue"   
+         self.age = Rpggen.roll('1d3+21')
+         self.terms = 1
+         numSkills = 9 # TODO right number?  Basic Training plus above.
       else:
-       raise ValueError('level is an unknown value: %s' % level)
+         raise ValueError('level is an unknown value: %s' % level)
 
     # Three issues here: what skills, and what level (also equipment based on skills)
     # So we cycle through skills like this: 
@@ -71,7 +89,7 @@ class YoungThug(Character):
     # lucky means the character get more skills
       lucky = (Rpggen.roll('1d5') == 1)
       for idx in range(1, numSkills):
-       if idx < 7:
+         if idx < 7:
           if idx % 3 == 1:
              skill = Attribute(self.meleeSkills.use(),0)
              self.skills.append(skill)
@@ -81,33 +99,15 @@ class YoungThug(Character):
           if idx % 3 == 0:
              skill = Attribute(self.otherSkills.use(),0)
              self.skills.append(skill)
-       else:
+         else:
              skill = Attribute(self.otherSkills.use(),0)
              self.skills.append(skill)       	
-      if level == 'teen':
-       pass   
-      elif level == 'start':
-       pass
-      elif level == 'young':
-       pass
-      else:
-       raise ValueError('level is an unknown value: %s' % level)
 
       # Loop through each skills, and give any equipment that makes sense.
       for attr in self.skills:
-       if attr.specific is not None:
-          if attr.specific == 'Blugeoning':
-             self.equipment.append('Billy Club')
-          elif attr.specific == 'Natural':
-             self.equipment.append('Pipe')
-          elif attr.specific == 'Piercing':
-             self.equipment.append('Shiv')
-          elif attr.specific =='Slashing':
-             self.equipment.append('Knife')
-          else:
-             self.equipment.append(attr.specific)
-          	 #print('Specific Melee skill is not known: %s' % attr.specific)
-             pass
+         if attr.specific is not None:  
+            self.equipmentTableOrDefault(attr.specific)
+
       # Figure out how much money he has 
       # TODO: refine algorithm
       # TODO: add bling
@@ -115,9 +115,31 @@ class YoungThug(Character):
       bank = int(Rpggen.roll('2d5')) * 100
       self.money = { 'pocket': pocket, 'bank': bank, 'pension': 0}
 
+      # What is the thug carrying?
+      if self.possessionsTable is not None:
+         if self.money['bank'] > 300:
+            num = Rpggen.roll('3d3')
+         else:
+            num = Rpggen.roll('2d2')
+         self.possessions = self.possessionsTable.rollRepeatedly(num)
+
 
 
       # Add some events
+
+   def equipmentTableOrDefault(self, weapon, default=None):
+      '''Note that this function assumes a table with name 'WeaponsX' for each skill with a
+         specialization of X.  If oneis not found, then default is used, and if default is not
+         set, then the specialization is used as a possetion.  (Which actually works better than
+         you would expect.)
+      '''
+      if default is None:
+         default = weapon
+      tableName = 'Weapons'+weapon
+      try: 
+         self.equipment.append(Rpggen.finduse(tableName))
+      except:            
+         self.equipment.append(default)
 
    def text(self):
       return self.strSmall()
@@ -129,9 +151,14 @@ class YoungThug(Character):
        text('%s (%d term%s)              Cr%d' % (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), self.availableMoney()))
        doc.asis('<p>')
        text(self.strSkills())
+       if self.personality is not None:
+          doc.stag('br') 
+          text('Personality: %s' % ', '.join(self.personality))       
        doc.asis('<br>') 
        text('Equipment: %s' % ', '.join(self.equipment))
        doc.asis('<br>')
+       text('Possessions: %s' % ', '.join(self.possessions))
+       doc.asis('<br>')       
        text('Money: %d in pocket, %d in bank, %d in pension' %
                   (self.money['pocket'], self.money['bank'], self.money['pension']))
        doc.asis('<br>')

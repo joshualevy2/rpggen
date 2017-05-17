@@ -1,4 +1,6 @@
 
+import os
+
 import json, logging, re, random, sys, string
 from bottle import SimpleTemplate
 
@@ -134,7 +136,7 @@ class Rpggen:
            return str(Rpggen.roll(name))
         except:   
            print(Table.names())
-           #print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+           print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
            raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
         return ""
      
@@ -387,7 +389,7 @@ class Table:
    def rollRepeatedly(self, num, unique=True):
       return self.useRepeatedly(num, unique)
 
-   def use(self):
+   def use(self, partof=None):
       self.internal_check()
       logging.debug('%s %s %d' % (self.id, self.dice, len(self.rows)))
       roll = Rpggen.roll(self.dice)
@@ -402,8 +404,12 @@ class Table:
                  if not row2.used:
                     row = row2
                     break
-               if row is None:    
-                  raise ValueError('Rolling uniquely on %s, but no rows are unused.' % self.id)
+               if row is None:   
+                  if partof is None:
+                     partof = 1 
+                  raise ValueError('Rolling uniquely on %s (%d times), but no rows are unused. '
+                                   'That table has %d rows.' % 
+                                   (self.id, partof, len(self.rows)))
             # We've now found the right row, so mark it as used, and return it (or it's template)
             row.used = True
             if row.result != "" :
@@ -420,7 +426,7 @@ class Table:
          self.clear()
          self.unique = True
       for nn in range(num):
-         results.append(self.use())
+         results.append(self.use(partof=num))
       if not wasunique and unique:
          self.clear()
       self.unique = wasunique
