@@ -10,16 +10,16 @@ class CepheusEngine():
    def __init__(self):
       return
        
-class CorporateRepo(Career):
-   name = 'Corporate Repo'
-   
-   @classmethod
-   def setup(self):
-      #Rpggen.load('CorporateRepo.rpggen')
-      pass
-      
-   def doBasicTraining(self, char):
-      char.change(('skill','add','Liaison', '0'))
+#class CorporateRepo(Career):
+ #  name = 'Corporate Repo'
+#   
+#   @classmethod
+#   def setup(self):
+#      #Rpggen.load('CorporateRepo.rpggen')
+#      pass
+#      
+#   def doBasicTraining(self, char):
+#      char.change(('skill','add','Liaison', '0'))
       
 class Character(Character):
 
@@ -78,12 +78,12 @@ class Character(Character):
            self.skills.append(Attribute(skillName, skillLevel))
 
    def changeStr(self, command):
-      logging.info('changeStr(%s)' % str(command))
+      logging.debug('changeStr(%s)' % str(command))
       self.history.append(command)
       if type(command) == list:
          raise ValueError('For changeCharacter, command can not be a list (yet).')
       parts = command.split(' ')
-      logging.info('In changeStr: %s' % "|".join(parts))
+      logging.debug('In changeStr: %s' % "|".join(parts))
       if len(parts) == 1:
          self.change(('skill', parts[0], 'add', '1')) 
       elif len(parts) ==2:
@@ -98,7 +98,7 @@ class Character(Character):
                        
 
    def change(self, command):
-      logging.info('Changing %s for %s' % ("|".join(command),self.name))
+      logging.debug('Changing %s for %s' % ("|".join(command),self.name))
       if type(command) == list:
          raise ValueError('For changeCharacter, command can not be a list (yet).')
       if command[0] == "attr":
@@ -137,9 +137,14 @@ class Character(Character):
          else:
            print('Could not change %s for %s' % (command,self.name))
 
-   def checkStr(command):
+   def checkStr(self,command):
+      '''This function implmenents attribute checks on a character.
+         Sample call: character.checkStr('int 8+')
+         TODO: In the future, it will do skills as well.
+      '''
       parsed = command.split(' ')
-      Traveller.roll() 
+      result = Traveller.roll(dm=Traveller.dm(parsed[0]), target=parsed[1]) 
+      return result
 
    def doBasicTraining(self, character):
       self.history.append('In basic training')
