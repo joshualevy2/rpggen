@@ -19,17 +19,22 @@ class CorporateRepo(Career):
       self.addData('Skills',
       	          ['Streetwise', None, 'GunCombat', None, None, None, None])     
       self.addTable(Table('MaterialBenefits',
-      	                 ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
+      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
       self.addTable(Table('CashBenefits',
-      	                 ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))      	                 
+      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))      	                 
       self.addTable(Table('PersonalDevelopment',
-      	                 ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
+      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
       self.addTable(Table('ServiceDevelopment',
-      	                 ['Streetwise', 'Engineering', 'Bribery','Liaison','Recon','Mechanics']))
+      	                  ['Streetwise', 'Engineering', 'Bribery','Liaison','Recon','Mechanics']))
       self.addTable(Table('SpecialistDevelopment',
-      	                 ['Zero-G', 'Comms', 'Admin','Electronics','Leadership','Jack-o-Trades']))
+      	                  ['Zero-G', 'Comms', 'Admin','Electronics','Leadership','Jack-o-Trades']))
       self.addTable(Table('AdvancedDevelopment',
-      	                 ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?']))
+      	                  ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?']))
+      self.addTable(Table('MaterialBenefits',
+                          ['Low Passage', 'Explorer’ Society', 'Weapon', 'Mid  Passage', 
+                           '+1 Soc', 'Starship', 'High Passage']))
+      self.addTable(Table('CashBenefits',
+                          ['1000', '5000', '10000', '20000', '20000', '50000', '100000']))
   
  #  def doBasicTraining(self, character):
  #     character.change(('skill','add','Liaison', '0'))
@@ -43,7 +48,7 @@ class CorporateRepo(Career):
 if __name__ == '__main__':    
    # Initialize the CepheusEngine environment, which also initializes the 
    # basic Traveller environment.
-   logging.basicConfig(level=logging.INFO)
+   #logging.basicConfig(level=logging.INFO)
    cepheusEngine = CepheusEngine()
  
    # Initialize the CorporateRepo career
@@ -64,6 +69,8 @@ if __name__ == '__main__':
       endReason = crCareer.doOneTerm(crPerson)
 
    crPerson.endReason = endReason
+   crPerson.history.append(endReason)
+   crCareer.doMusteringOut(crPerson)
 
    print(crPerson.strSmall())
    print(crPerson.strHistory())

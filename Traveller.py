@@ -42,7 +42,7 @@ class Attribute():
 class Career():
    #name = ''
    #config = {}
-   whichAdvantage = Table("WhichAdvantage", 
+   whichAdvantage = Table("WhichAdvantage",
                           ['MaterialBenefits','CashBenefits','PersonalDevelopment',
                            'ServiceDevelopment'])
 
@@ -53,7 +53,7 @@ class Career():
          self.log = []
          # JCL self.history = []
       except:
-         raise ValueError('Config did not have the items required.') 
+         raise ValueError('Config did not have the items required.')
 
    def addData(self,name,data):
       self.config[name] = data
@@ -78,7 +78,41 @@ class Career():
       character.history.append('In basic training')
       which = self.whichAdvantage.use()
       adv = Rpggen.finduse(which)
-      character.changeStr(adv)    
+      character.changeStr(adv)
+
+   def doMusteringOut(self, character):
+     # CE31
+     # Calculate pension
+     if character.rank > 4:
+        character.money['pension'] = 2000 * character.rank
+        character.history.append('Got a pension of %d' % character.money['pension'])
+
+     # Calculate number of benefits
+     benefitCount = character.terms
+     if character.rank >= 4:
+        benefitCount = character.rank - 2
+     # Divide between cash and material
+     cashBenefits = 0
+     materialBenefits = 0
+     if benefitCount < 3:
+        cashBenefits = benefitCount
+     elif 3 <= benefitCount:
+        cashBenefits = 2
+        materialBenefits = benefitCount - 2
+
+     character.history.append('Ended up with %d cash and %d material benefits' %
+                              (cashBenefits, materialBenefits))
+     for num in range(cashBenefits):
+        benefit = Rpggen.finduse('CashBenefits')
+        character.money['bank'] += int(benefit)
+        character.history.append(benefit)
+     for num in range(materialBenefits):
+        benefit = Rpggen.finduse('MaterialBenefits')
+        if benefit.startswith('+'):
+           character.changeStr(benefit)
+        else:
+           character.possesions.append(benefit)
+        character.history.append(benefit)
 
    def doOneTerm(self, character):
       '''Adds one term to a character.
@@ -88,29 +122,41 @@ class Career():
       logging.debug('entering doOneTerm')
       character.history.append('Starting a new term.')
       if character.terms == 7:
-         return 'Aged out of career.'
-      if self.roll('survival'):
-         return 'Did not survive.'
+         result = 'Aged out of career.'
+         character.history.append(result)
+         return result
+      if character.checkStr(self.config['survival']):
+         result = 'Did not survive.'
+         character.history.append(result)
+         return result
       character.terms += 1
       character.age += 4
-
-      if self.rank == 0:
-         if self.roll('commission'):
-            character.history.append('Was commissioned')
-            self.rank = 1
-      else:
-         if self.roll('advancement'):
-            character.history.append('Advanced in rank.')
-            self.rank += 1
 
       # TODO use funciton here
       which = self.whichAdvantage.use()
       adv = Rpggen.finduse(which)
-      character.changeStr(adv)   
-      
+      character.changeStr(adv)
+
+      print('rank %d' % character.rank)
+      if character.rank == 0:
+         print('foo')
+         if character.checkStr(self.config['commission']):
+            character.history.append('Was commissioned')
+            character.rank = 1
+            newSkill = self.config['Skills'][character.rank-1]
+            if newSkill is not None:
+               character.changeStr(newSkill)
+      else:
+         if character.checkStr(self.config['advancement']):
+            character.history.append('Advanced in rank.')
+            character.rank += 1
+            newSkill = self.config['Skills'][character.rank-1]
+            if newSkill is not None:
+               character.changeStr(newSkill)
+
       if self.roll('reenlistment'):
          return 'Could not reenlist.'
-         
+
       return None
 
    def roll(self, name):
@@ -133,15 +179,15 @@ class Career():
          tab = self.config[name]
       except:
          KeyError('The Career %s did not have a config item called %s' % (self.name, name))
-      return tab.use()      
-      
+      return tab.use()
+
    def printTestHelper(self, name):
       try:
         data = self.config[name]
         print('Has %s: %s' % (name, str(data)))
       except KeyError:
         print('Does not have %s.' % name)
-     
+
    def printTest(self):
       self.printTestHelper('name')
       self.printTestHelper('qualifications')
@@ -149,13 +195,13 @@ class Career():
       self.printTestHelper('commission')
       self.printTestHelper('advancement')
       self.printTestHelper('reenlistment')
-      self.printTestHelper('Ranks')                 
-      self.printTestHelper('Skills')                  
-      self.printTestHelper('MaterialBenefits')    
-      self.printTestHelper('CashBenefits')                      
+      self.printTestHelper('Ranks')
+      self.printTestHelper('Skills')
+      self.printTestHelper('MaterialBenefits')
+      self.printTestHelper('CashBenefits')
       self.printTestHelper('PersonalDevelopment')
-      self.printTestHelper('ServiceDevelopment')  
-      self.printTestHelper('SpecialistDevelopment')    
+      self.printTestHelper('ServiceDevelopment')
+      self.printTestHelper('SpecialistDevelopment')
       self.printTestHelper('AdvancedDevelopment')
 
 class Character():
@@ -178,14 +224,17 @@ class Character():
       self.skills = []
       self.equipment = []
       self.money = { 'pocket': 0, 'bank': 0, 'pension': 0}
-      #self.possesions = []
+      self.possesions  = []
       self.history = []
+
+#   def internalCheck(self):
+#      if
 
    def addToSkill(self, name, value):
       for skill in self.skills:
          if name == skill.name:
             skill.value += value
-            
+
    def availableMoney(self):
       '''Returns the common amount of money (pocket+bank but not pension)'''
       pocket = self.money['pocket']
@@ -203,14 +252,15 @@ class Character():
       self.end = Rpggen.roll('2d6')
       self.int = Rpggen.roll('2d6')
       self.edu = Rpggen.roll('2d6')
-      self.soc = Rpggen.roll('2d6')      
+      self.soc = Rpggen.roll('2d6')
 
    def dict(self):
       '''Returns the character in dictionary format
       '''
       return self.__dict__
-   
+
    def dm(self, attr):
+      attr = attr.tolower()
       if attr == 'dex': return Traveller.dm(self.dex)
       if attr == 'end': return Traveller.dm(self.end)
       if attr == 'int': return Traveller.dm(self.int)
@@ -228,7 +278,7 @@ class Character():
 
    def roll(self, attr, target):
       return Traveller.roll(target=target, dm=self.dm(attr))
-      
+
    def skillNames(self):
       skillNames = []
       for skill in self.skills:
@@ -243,17 +293,19 @@ class Character():
 
    def strSmall(self):
        result = ''
-       result += ('Name: %s        %s  %d years old\n' % 
+       result += ('Name: %s        %s  %d years old\n' %
                   (self.name, self.strUpp(),self.age))
-       result += ('%s (%d term%s) ended up with rank of %d    Cr%d\n' % 
-                  (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), 
-                   self.rank(),
+       result += ('%s (%d term%s) ended up with rank of %d    Cr%d\n' %
+                  (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""),
+                   self.rank,
                    self.availableMoney()))
        result += '\n'
        result += self.strSkills()+'\n'
-       result += 'Equipment: %s\n' % ', '.join(self.equipment) 
+       result += 'Equipment: %s\n' % ', '.join(self.equipment)
        result += ('Money: %d in pocket, %d in bank, %d in pension\n' %
                   (self.money['pocket'], self.money['bank'], self.money['pension']))
+       if len(self.possesions) > 0:
+          result += 'Possesions: %s\n' % ', '.join(self.possesions)
        result += '\n'
        return result
 
@@ -284,28 +336,28 @@ class Profile():
    extras = []
    rules = {}
    value = ''
-   
+
    Attr = '23456789AB'
    Hex = '123456789ABCDEF'
    Starports = 'ABCDEX'
-   
-   
+
+
    def __init__(self, name, letters, extras=None, format=None, rules=None):
       self.id = name
       self.format = format
       self.letters = letters
       self.extras = extras
       self.rules = rules
-     
-   def generate(self):  
+
+   def generate(self):
       result = ''
       for letter in self.letters:
           result = '%s%s' % (result,random.choice(letter))
       self.value = result
       return self.value
-  
-   def smallStr(self): 
-      if self.format is not None:   
+
+   def smallStr(self):
+      if self.format is not None:
          return self.format % tuple(self.value)
       else:
          result = ''
@@ -313,14 +365,14 @@ class Profile():
             return result
          for letter in self.value:
             result = '%s%s' % (result,letter)
-         return result         
-     
-   
+         return result
+
+
 class Traveller():
 
    customziations = {}
    Rpggen.setCustomization('d66support',True)
-   
+
    @classmethod
    def digit2char(cls,num):
       """This function takes a number (usually one digit) and converts it to
@@ -367,7 +419,10 @@ class Traveller():
 
       targetMatch = re.search(r"^([0123456789]+)([+-]?)$", target)
       #print(targetMatch)
-      
+      if targetMatch is None:
+         raise ValueError('In Traveller.roll(), target of %s matched noting' % target)
+
+
       targetNum = int(targetMatch.group(1))
       targetCmp = targetMatch.group(2)
       if debug:
@@ -393,19 +448,19 @@ class Traveller():
          or creates it new, with the given value.
       '''
       self.customziations[name] = value
-      
+
    def getCustomization(self, name, default=None):
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
       '''
       if customizations is None:
-         return default      
+         return default
       try:
          result = self.customizations[name]
          return result
       except KeyError:
          return default
-      
+
 if __name__ == '__main__':
    print('Test Traveller Code:')
    print("Roll 1 dice: %d" % Traveller.roll(1))
