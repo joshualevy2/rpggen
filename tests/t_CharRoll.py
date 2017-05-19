@@ -3,7 +3,7 @@ import unittest
 
 sys.path.append('..')
 from CepheusEngine import CepheusEngine, Character
-from rpggen import Rpggen
+from Rpggen import Rpggen
 
 class TestCharacterRoll(unittest.TestCase):
 

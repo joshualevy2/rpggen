@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..')
-from rpggen import Rpggen
+from Rpggen import Rpggen
 
 def testchars1(num) :
     print("chars({0}): {1}".format(num,Rpggen.chars(num)))

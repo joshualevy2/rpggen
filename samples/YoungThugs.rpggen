@@ -17,11 +17,13 @@
 { 
     "id" : "WeaponsSlashing",
     "1-10": "Big Knife",
-    "11-14": "Short Sword (or Katana)"
+    "11-14": "Short Sword (or Katana)",
+    "15": "Whip Knife"
 },
 { 
     "id": "WeaponsEnergyPistol",
-    "1-10": "Laser Pistol"
+    "1-10": "Laser Pistol",
+    "11-12": "ULF Pistol"
 },
 { 
     "id": "WeaponsEnergyRifle",
@@ -47,6 +49,18 @@
     "1": "Revolver",
     "2": "Automatic Pistol",
     "3": "Needler",
-    "4": "Gauss Pistol"
+    "4": "Gauss Pistol",
+    "5": "Snub Pistol"
+}, 
+{
+    "id": "PossetionsTable",
+    "1-6": "Drugs or Drug Paraphenalia",
+    "7": "Religious Item",
+    "8": "Pocket Tool",
+    "9": "Someone Else's Personal Computer",
+    "10": "Jewlery",
+    "11": "Birth Control",
+    "12": "Gambling Stuff",
+    "13": "Shades (Dark Glasses)"
 }
 ]

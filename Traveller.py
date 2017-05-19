@@ -4,7 +4,7 @@ import random
 import re
 
 from GetFromWeb import GetFromWeb
-from rpggen import Rpggen, Table
+from Rpggen import Rpggen, Table
 
 class Attribute():
 
@@ -178,6 +178,7 @@ class Character():
       self.skills = []
       self.equipment = []
       self.money = { 'pocket': 0, 'bank': 0, 'pension': 0}
+      #self.possesions = []
       self.history = []
 
    def addToSkill(self, name, value):
@@ -335,8 +336,9 @@ class Traveller():
       return 0
 
    @classmethod
-   def roll(cls, dice=None, target=None, dm=None):
-      logging.debug('roll(%s, %s, %s)' % (dice,target,dm))
+   def roll(cls, dice=None, target=None, dm=None, debug=False):
+      if debug:
+         print('roll(%s, %s, %s)' % (dice,target,dm))
       got = Rpggen.roll("2d6")
       if dice is not None:
          if type(dice) == int:
@@ -368,12 +370,14 @@ class Traveller():
       
       targetNum = int(targetMatch.group(1))
       targetCmp = targetMatch.group(2)
+      if debug:
+         print('%s %d %d' % (targetCmp, got, targetNum))      
       if targetCmp is None:
          return got == targetNum
       elif targetCmp == '+':
-         return got <= targetNum
-      elif targetCmp == '-':
          return got >= targetNum
+      elif targetCmp == '-':
+         return got <= targetNum
       else:
          raise ValueError('In roll(), target string (%s) is malformed.' % target)
 

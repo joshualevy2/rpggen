@@ -2,7 +2,7 @@
 from GetFromWeb import GetFromWeb
 import logging
 import re
-from rpggen import Table, Rpggen
+from Rpggen import Table, Rpggen
 from Traveller import Attribute, Career, Character, Traveller
 
 class CepheusEngine():

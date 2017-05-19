@@ -3,7 +3,7 @@ import sys
 import unittest
 
 sys.path.append('..')
-from rpggen import Select, Rpggen
+from Rpggen import Select, Rpggen
 
 class TestSelect(unittest.TestCase):
 

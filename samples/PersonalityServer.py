@@ -15,7 +15,7 @@ if development:
 else:
    sys.path.append('/home/joshualevy/rpggen')
 
-from rpggen import Rpggen, Table
+from Rpggen import Rpggen, Table
 
 if development:
    baseUrl = 'http://localhost:1188'
@@ -68,6 +68,7 @@ class formatting():
 
 # Routing functions which are global to the server (ie. not for any one micro-service).
 
+@route('/')
 @route('/help')
 def help():
    doc, tag, text = Doc().tagtext()
@@ -76,10 +77,48 @@ def help():
          pass
       with tag("body"):
          with tag('p'):
-           text('This is an experimental server run by Joshua Levy.')
+           text('This is an experimental server run by Joshua Levy.  '
+                'It is running a collection of micro services which return data useful '
+                'in roll playing games.')
          with tag('p'):
            text('You can always goto %s/help to get this help message.' % baseUrl)  
-         doc.asis(globalHelp)              
+          
+         doc.asis(globalHelp)  
+
+         with tag('h2'):
+            text('Formatting Output')
+         with tag('p'):
+           text('Most (but not all) of the micro-services support the following formats, '
+                'which you can set by adding "?format=htmlPage" (or whicheer format you want) '
+                'to the end of your URL.')              
+         with tag('dl'):
+            with tag('dt'):
+               text('htmlPage')
+            with tag('dd'):
+               text('Prints several results on one web page.  Each result is html formatted.  '
+                    'This is often the best if you are a GM.  You can see several options at a '
+                    'glance, and choose the one you like the most.')  
+            with tag('dt'):
+               text('json')
+            with tag('dd'):
+               text('Your results, encoded as json, ready for use by other programs.  '
+                    'You can think of this as the REST API for the micro-service.  '
+                    'Note that the data structure is usually a dictionary, but sometimes '
+                    'list.  Each micro-service\'s help page will more details on that.') 
+            with tag('dt'):
+               text('html')
+            with tag('dd'):
+               text("Results formatted in html; This is similar to Google's old \"I'm "
+                    "Feeling Lucky\" "
+                    "button.  Used for testing output, mostly.")
+            with tag('dt'):
+               text('htmlText')
+            with tag('dd'):
+               text('Prints one with minimal "plaintext" formatting, so that it looks ok in html.')               
+            with tag('dt'):
+               text('text') 
+            with tag('dd'):
+               text('Plain text.  Looks ugly in browsers, but great for cut-n-paste.')                     
    return doc.getvalue()
 
 @error(404)
@@ -116,6 +155,8 @@ def pGlobalHelp():
    doc, tag, text = Doc().tagtext()
    with tag('h2'):
          text('Personality Servers: Personalities for NPCs and PCs')
+   with tag('p'):
+      text('Returns a simple personality use in RPG characters.')         
    with tag('blockquote'):
          text('Get help: ')
          formatting.link(tag, text, '%s/p/help' % baseUrl)
@@ -160,13 +201,13 @@ def pHelp():
                  'Examples of use include:')
          with tag('ul'):
             with tag('li'):
-               with tag('a', href='%s/p/help' % baseUrl):
-                 text('%s/p/help' % baseUrl)
-               text(' To see this help message.')  
-            with tag('li'):
                formatting.link(tag, text, '%s/p/1000words/3 ' % baseUrl)  
             with tag('li'):
-               formatting.link(tag, text, '%s/p/100words/30 ' % baseUrl)                
+               formatting.link(tag, text, '%s/p/100words/30 ' % baseUrl)  
+            with tag('li'):
+               with tag('a', href='%s/p/help' % baseUrl):
+                 text('%s/p/help' % baseUrl)
+               text(' To see this help message.')                               
          with tag('dl'):
             with tag('dt'):
                text('1000words')
@@ -259,6 +300,32 @@ def PersonalityTraits1000(method, num=3):
 # Routing for the YoungThug ("yt") miniserver.
 
 from YoungThugs import YoungThug
+
+def ytGlobalHelp():
+   global globalHelp
+   doc, tag, text = Doc().tagtext()
+   with tag('h2'):
+         text('Young Thug Micro-Servers: Young Thugs NPCs')
+   with tag('p'):
+      text('The guys hanging around bars, alleys, docks, etc.  They are 16-22 years '
+           'old (0 or 1 terms) and light on skills, but heavy on weapons!')
+   with tag('blockquote'):
+         text("If you're a GM get several thugs, and choose one to use: ")
+         formatting.link(tag, text, '%s/yt?format=htmlPage' % baseUrl)
+         doc.stag('br')
+         text('If you want a REST interface with a json response, try this: ')
+         formatting.link(tag, text, '%s/yt?format=json' % baseUrl)
+         doc.stag('br')
+         text('Get help: ')
+         formatting.link(tag, text, '%s/yt/help' % baseUrl)
+
+   globalHelp += doc.getvalue()   
+
+ytGlobalHelp()   
+
+@route('/yt/help')
+def ytHelp():
+    return 'This server returns one young thug in plain text format'
 
 @route('/yt')
 def youngthug():

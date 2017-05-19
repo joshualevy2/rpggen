@@ -4,7 +4,7 @@ import json
 
 sys.path.append('..')
 from CepheusEngine import Character
-from rpggen import Rpggen
+from Rpggen import Rpggen
 
 class TestPsi(unittest.TestCase):
 

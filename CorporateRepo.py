@@ -1,7 +1,7 @@
 import logging
 
 from CepheusEngine import Career, CepheusEngine, Character
-from rpggen import Rpggen, Table
+from Rpggen import Rpggen, Table
 from Traveller import Traveller
 
 class CorporateRepo(Career):
