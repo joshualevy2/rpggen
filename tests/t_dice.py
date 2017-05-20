@@ -3,7 +3,7 @@ import sys
 import unittest
 
 sys.path.append('..')
-from rpggen import Rpggen
+from Rpggen import Rpggen
 
 class TestDiceRolls(unittest.TestCase):
 

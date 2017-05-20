@@ -7,7 +7,7 @@ from yattag import Doc
 sys.path.append('..')
 from CepheusEngine import Character
 from GetFromWeb import GetFromWeb
-from rpggen import Rpggen, Select, Table
+from Rpggen import Rpggen, Select, Table
 from Traveller import Attribute, Traveller
 
 # TODO Why not CepheusEngine.Character?
@@ -27,22 +27,30 @@ class YoungThug(Character):
                        ['Bribery', 'Courousing', 'Gambling', 'Leadership', 'Mechanics',
                         'Medicine', 'Recon', 'Streetwise', 'Tactics'],
 		                 unique=True)
-
+   # This is a very generic table, which should be overwritten by a better one in the
+   # setting table
    possessionsTable = Table('PossetionsTable',
                             ['Key', 'Legal Drugs', 'Illegal Drugs', 'Gambling Materials',
                              'Gear Bag', 'Shades', 'Pet', 'Religious Figurine', 'Feather',
                              'Rock'])
 
+   try:
+      Rpggen.load("Setting.rpggen")
+   except:
+      print('Warning: could not find data file YoungThugs.rpggen.') 
+      print(sys.exc_info()[1])    
+   try:
+      personalityTable = Rpggen.loadLt("PersonalityTraits.lt")
+   except:
+      personalityTable = None 
+
    def __init__(self):
       super().__init__()
       Rpggen.clear()
-      try:
-         Rpggen.load("Setting.rpggen")
-      except:
-         print('Warning: could not find data file YoungThugs.rpggen.') 
-         print(sys.exc_info()[1])       
 
    def generate(self):
+      '''Create a young thug.
+      '''
       Rpggen.clear()
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"    
@@ -53,12 +61,8 @@ class YoungThug(Character):
       self.edu = Rpggen.roll('2d2')
       self.soc = Rpggen.roll('2d3')
 
-      try:
-         personalityTable = Rpggen.loadLt("PersonalityTraits.lt")
-      except:
-         personalityTable = None
-      if personalityTable is not None:
-         self.personality = personalityTable.rollRepeatedly(3, unique=True)
+      if self.personalityTable is not None:
+         self.personality = self.personalityTable.rollRepeatedly(3, unique=True)
 
       level = Select.choose(['teen','start', 'young'])
       if level == 'teen':
@@ -121,7 +125,7 @@ class YoungThug(Character):
             num = Rpggen.roll('3d3')
          else:
             num = Rpggen.roll('2d2')
-         self.possessions = self.possessionsTable.rollRepeatedly(num)
+         self.possessions = Rpggen.find('PossetionsTable').rollRepeatedly(num)
 
 
 
@@ -157,7 +161,7 @@ class YoungThug(Character):
        doc.asis('<br>') 
        text('Equipment: %s' % ', '.join(self.equipment))
        doc.asis('<br>')
-       text('Possessions: %s' % ', '.join(self.possessions))
+       #text('Possessions: %s' % ', '.join(self.possesions))
        doc.asis('<br>')       
        text('Money: %d in pocket, %d in bank, %d in pension' %
                   (self.money['pocket'], self.money['bank'], self.money['pension']))
@@ -182,12 +186,12 @@ class YoungThug(Character):
          with tag("head"):
            pass
          with tag("body"):
-            with tag("table", width = '100%', border=2, style='table-layout: fixed;'):
+            with tag("table", width = '100%', border=2, cellpadding=10, style='table-layout: fixed;'):
                for ii in range(int(count/2)):
                   with tag("tr", border=2):
                     for jj in range(2):
                       with tag('td', width = '50%', height = '25%', padding='15', border=2, style='word-wrap:break-word;'):
-                        ch = characters[ii]
+                        ch = characters[ii+(jj-1)]
                         tmp = ch.html()
                         doc.asis(tmp)
             doc.asis('<br>')

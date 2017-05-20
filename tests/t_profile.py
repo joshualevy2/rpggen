@@ -3,7 +3,7 @@ import unittest
 
 sys.path.append('..')
 
-from rpggen import Rpggen
+from Rpggen import Rpggen
 from Traveller import Profile, Traveller
 
 class TestProfile(unittest.TestCase):

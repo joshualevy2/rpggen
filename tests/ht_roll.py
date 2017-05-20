@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..')
-from rpggen import Rpggen
+from Rpggen import Rpggen
 
 def testroll(dicestr) :
     print(dicestr+": "+str(Rpggen.roll(dicestr))+" "+str(Rpggen.use(dicestr))+" "+str(Rpggen.finduse(dicestr))+

@@ -3,7 +3,7 @@ import unittest
 import json
 
 sys.path.append('..')
-from rpggen import Rpggen
+from Rpggen import Rpggen
 from Traveller import Attribute, Traveller
 
 class TestPsi(unittest.TestCase):

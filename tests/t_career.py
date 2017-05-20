@@ -3,7 +3,7 @@ import sys
 sys.path.append('..')
 from CepheusEngine import Career, CepheusEngine, Character
 from CorporateRepo import CorporateRepo
-from rpggen import Rpggen
+from Rpggen import Rpggen
 from Traveller import Traveller
 
 class TestCareer(unittest.TestCase):

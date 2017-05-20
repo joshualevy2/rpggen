@@ -4,7 +4,7 @@ import unittest
 sys.path.append('..')
 
 from CepheusEngine import Character
-from rpggen import Rpggen
+from Rpggen import Rpggen
 
 class TestMoney(unittest.TestCase):
 

@@ -1,13 +1,27 @@
 
+# Traveller.py
+
 import logging
 import random
 import re
 
 from GetFromWeb import GetFromWeb
-from rpggen import Rpggen, Table
+from Rpggen import Rpggen, Table
 
 class Attribute():
+   '''This class is used to represent anything that has a level, although right now it is only 
+      used for skills.  It is basically a tripple (name,level,cost).  However cost is
 
+      name: the name of the attribute, skill, etc.
+      value: the level of the attribute
+      cost: (optional) Only used in character design schemes, this is the number of points
+            needed to get this attribute to this level.
+
+      This class has one global variable:
+      useCost: a bollean to determine if cost should be used or not.      
+
+      TODO: move dm() here?      
+   '''
    useCost = False
 
    def __init__(self,name,value=None,cost=0):
@@ -24,6 +38,7 @@ class Attribute():
       #print('DEBUG (%s,%s) -> [%s|%s|%s]' % (name, value, self.name, self.specific, self.value))
       if self.useCost:
          self.cost = cost
+
    def fullName(self):
       if self.specific is None:
          return self.name
@@ -40,8 +55,15 @@ class Attribute():
       return '%s%s-%s%s' % (self.name, specific, self.value, cost)
 
 class Career():
-   #name = ''
-   #config = {}
+   '''This class represents one Traveller career.
+      It mostly contains functions aimed at a character's pregression through that career.
+
+      More specific rules (such as CepheusEngine or MegaTraveller) will have their own career
+      classes which will usually inherit from this one.
+
+      Also, each specific career (Scout, Army, Pirate, etc.) will inherit from this class.
+   '''
+
    whichAdvantage = Table("WhichAdvantage",
                           ['MaterialBenefits','CashBenefits','PersonalDevelopment',
                            'ServiceDevelopment'])
@@ -51,7 +73,6 @@ class Career():
          self.name = config['name']
          self.config = config
          self.log = []
-         # JCL self.history = []
       except:
          raise ValueError('Config did not have the items required.')
 
@@ -71,7 +92,7 @@ class Career():
 
    def changeName(self,name):
       self.name = name
-      self.config['name'] = name
+      self.config['name'] = name  
 
    def doBasicTraining(self, character):
       # TODO put in seperate function
@@ -161,6 +182,7 @@ class Career():
 
    def roll(self, name):
       '''Roll on the named item for this career.
+         Only works on rolls specific to a career (reenlistment, survival, etc.)
          Returnes True if succeeds and False if it fails.
          Raises an exception if the argument is not known to this career.
       '''
@@ -205,6 +227,10 @@ class Career():
       self.printTestHelper('AdvancedDevelopment')
 
 class Character():
+   '''This class represents a character in Traveller.
+
+      More specific rules may want to subclass it, if they have more attributes.
+   '''
 
    attrShort = ['dex','end','int','edu','str','soc','psi']
 
@@ -231,6 +257,7 @@ class Character():
 #      if
 
    def addToSkill(self, name, value):
+      # TODO: do we need this?
       for skill in self.skills:
          if name == skill.name:
             skill.value += value
@@ -254,9 +281,30 @@ class Character():
       self.edu = Rpggen.roll('2d6')
       self.soc = Rpggen.roll('2d6')
 
+   def createUsingTimeline(self, career=None):
+      # Do all the pre-career character generation steps.
+
+      if career is None:
+         raise ValueError('TODO: must provide a career.')
+
+      self.createUpToCareer()
+      self.lastCareer = 'Corporate Repo'
+ 
+      # Do basic training for this person
+      career.doBasicTraining(self)
+
+      endReason = None 
+      while endReason is None:
+         endReason = career.doOneTerm(self)
+
+      self.endReason = endReason
+      self.history.append(endReason)
+      career.doMusteringOut(self)
+
    def dict(self):
       '''Returns the character in dictionary format
       '''
+      # TODO: need to review/improve this?
       return self.__dict__
 
    def dm(self, attr):
@@ -286,43 +334,49 @@ class Character():
       return skillNames
 
    def strHistory(self):
+      '''Returns a character's history as a string.
+      '''
       result = 'History:\n'
       for history in self.history:
          result += history+'\n'
       return result
 
    def strSmall(self):
-       result = ''
-       result += ('Name: %s        %s  %d years old\n' %
-                  (self.name, self.strUpp(),self.age))
-       result += ('%s (%d term%s) ended up with rank of %d    Cr%d\n' %
-                  (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""),
-                   self.rank,
-                   self.availableMoney()))
-       result += '\n'
-       result += self.strSkills()+'\n'
-       result += 'Equipment: %s\n' % ', '.join(self.equipment)
-       result += ('Money: %d in pocket, %d in bank, %d in pension\n' %
-                  (self.money['pocket'], self.money['bank'], self.money['pension']))
-       if len(self.possesions) > 0:
-          result += 'Possesions: %s\n' % ', '.join(self.possesions)
-       result += '\n'
-       return result
+      '''Returns a character's characteristics as a string (a mini-character sheet).
+      '''      
+      result = ''
+      result += ('Name: %s        %s  %d years old\n' %
+                 (self.name, self.strUpp(),self.age))
+      result += ('%s (%d term%s) ended up with rank of %d    Cr%d\n' %
+                 (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""),
+                  self.rank,
+                  self.availableMoney()))
+      result += '\n'
+      result += self.strSkills()+'\n'
+      result += 'Equipment: %s\n' % ', '.join(self.equipment)
+      result += ('Money: %d in pocket, %d in bank, %d in pension\n' %
+                 (self.money['pocket'], self.money['bank'], self.money['pension']))
+      if len(self.possesions) > 0:
+         result += 'Possesions: %s\n' % ', '.join(self.possesions)
+      result += '\n'
+      return result
 
    def strCareer(self):
-       if self.lastCareer == None:
-          return ''
-       return self.lastCareer
+      if self.lastCareer == None:
+         return ''
+      return self.lastCareer
 
    def strSkills(self):
-       result = ''
-       for skill in self.skills:
-           if result != '':
-               result += ', '
-           result += skill.strAttr()
-       return "Skills: "+result
+      result = ''
+      for skill in self.skills:
+          if result != '':
+              result += ', '
+          result += skill.strAttr()
+      return "Skills: "+result
 
    def strUpp(self):
+      '''Returns the character's Universal Person Profile as a string.
+      '''
       base = (Traveller.digit2char(self.str)+Traveller.digit2char(self.dex)+
               Traveller.digit2char(self.end)+Traveller.digit2char(self.int)+
               Traveller.digit2char(self.edu)+Traveller.digit2char(self.soc))
@@ -388,8 +442,9 @@ class Traveller():
       return 0
 
    @classmethod
-   def roll(cls, dice=None, target=None, dm=None):
-      logging.debug('roll(%s, %s, %s)' % (dice,target,dm))
+   def roll(cls, dice=None, target=None, dm=None, debug=False):
+      if debug:
+         print('roll(%s, %s, %s)' % (dice,target,dm))
       got = Rpggen.roll("2d6")
       if dice is not None:
          if type(dice) == int:
@@ -424,13 +479,14 @@ class Traveller():
 
       targetNum = int(targetMatch.group(1))
       targetCmp = targetMatch.group(2)
-      logging.debug('raw roll %s %s' % (targetNum,targetCmp))
+      if debug:
+         print('%s %d %d' % (targetCmp, got, targetNum))      
       if targetCmp is None:
          return got == targetNum
       elif targetCmp == '+':
-         return got <= targetNum
-      elif targetCmp == '-':
          return got >= targetNum
+      elif targetCmp == '-':
+         return got <= targetNum
       else:
          raise ValueError('In roll(), target string (%s) is malformed.' % target)
 

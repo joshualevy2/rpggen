@@ -3,7 +3,7 @@ import sys
 import unittest
 
 sys.path.append('..')
-from rpggen import Table, Template, Rpggen
+from Rpggen import Table, Template, Rpggen
 
 class TestTemplate(unittest.TestCase):
 
