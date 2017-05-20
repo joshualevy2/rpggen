@@ -34,16 +34,25 @@ class YoungThug(Character):
                              'Gear Bag', 'Shades', 'Pet', 'Religious Figurine', 'Feather',
                              'Rock'])
 
+   try:
+      Rpggen.load("YoungThugs.rpggen")
+   except:
+      print('Warning: could not find data file YoungThugs.rpggen.') 
+      print(sys.exc_info()[1])    
+   try:
+      personalityTable = Rpggen.loadLt("PersonalityTraits.lt")
+   except:
+      personalityTable = None 
+
    def __init__(self):
       super().__init__()
       Rpggen.clear()
-      try:
-         Rpggen.load("YoungThugs.rpggen")
-      except:
-         print('Warning: could not find data file YoungThugs.rpggen.') 
-         print(sys.exc_info()[1])       
+
+              
 
    def generate(self):
+      '''Create a young thug.
+      '''
       Rpggen.clear()
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"    
@@ -54,12 +63,8 @@ class YoungThug(Character):
       self.edu = Rpggen.roll('2d2')
       self.soc = Rpggen.roll('2d3')
 
-      try:
-         personalityTable = Rpggen.loadLt("PersonalityTraits.lt")
-      except:
-         personalityTable = None
-      if personalityTable is not None:
-         self.personality = personalityTable.rollRepeatedly(3, unique=True)
+      if self.personalityTable is not None:
+         self.personality = self.personalityTable.rollRepeatedly(3, unique=True)
 
       level = Select.choose(['teen','start', 'young'])
       if level == 'teen':

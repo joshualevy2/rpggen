@@ -9,19 +9,12 @@ class CepheusEngine():
 
    def __init__(self):
       return
-       
-#class CorporateRepo(Career):
- #  name = 'Corporate Repo'
-#   
-#   @classmethod
-#   def setup(self):
-#      #Rpggen.load('CorporateRepo.rpggen')
-#      pass
-#      
-#   def doBasicTraining(self, char):
-#      char.change(('skill','add','Liaison', '0'))
-      
+            
 class Character(Character):
+   '''This Class represents a CepheusEngine specific Character.
+      Because it inherits from Traveller.Character, the only code here should be differences
+      from Traveller.  (Different lists of skills, for example.)
+   '''
 
    skills = [ 'Admin','GunCombat(CascadeSkill)','Vehicle(CascadeSkill)','Advocate',
               'Archery',

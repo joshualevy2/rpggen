@@ -120,6 +120,17 @@ class Rpggen:
         else :
            return 'ERROR: wrong object type'
 
+    def find(name):
+        #print("finduse: "+name)    
+        try:
+           tab = Rpggen.tables[name]
+           return tab 
+        except:   
+#           print(Table.names())
+#           print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+#           raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
+            return None
+
     def finduse(name):
         #print("finduse: "+name)
         # TODO: why look in both raw and tables?
@@ -182,8 +193,7 @@ class Rpggen:
             #print("singleton"+str(d))
         else :
             #print("loaded table: "+d['id'])
-            d['_type'] = 'table'
-            d['rows'] = []
+            rows = []
             maxnum = -sys.maxsize
             minnum = sys.maxsize
             for k in d :
@@ -195,16 +205,21 @@ class Rpggen:
                     if len(sss) == 2 :
                        row.stop = int(sss[1])
                     row.result = d[k]
-                    d['rows'].append(row)
+                    rows.append(row)
                     # keeping track of smallest and largest if needed to create the roll
                     if row.stop > maxnum :
                         maxnum = row.stop
                     if row.start < minnum :
                         minnum = row.start
+            tab = Table(d['id'],rows)
             if not 'roll' in d :
-                d['roll'] = str(minnum)+"d"+str(int(maxnum/minnum))
+                tab.dice = str(minnum)+"d"+str(int(maxnum/minnum))
+            if not 'unique' in d:
+               tab.unique = False
+            else:
+               tab.unique = d['unique']
             # TODO if table is already there.
-            Rpggen.tables[d['id']] = d
+            Rpggen.tables[d['id']] = tab
 
     def loadLt(filename):
        '''Loads an rpggen file into the program.

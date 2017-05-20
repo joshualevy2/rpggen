@@ -5,6 +5,8 @@ from Rpggen import Rpggen, Table
 from Traveller import Traveller
 
 class CorporateRepo(Career):
+   '''This class repsents one career.
+   '''
 
    def __init__(self):
       super().__init__({'name': 'Corporate Repo',
@@ -36,8 +38,6 @@ class CorporateRepo(Career):
       self.addTable(Table('CashBenefits',
                           ['1000', '5000', '10000', '20000', '20000', '50000', '100000']))
   
- #  def doBasicTraining(self, character):
- #     character.change(('skill','add','Liaison', '0'))
 
    def qualified(self,character):
    	qual = self.config['qualifications']
@@ -56,21 +56,8 @@ if __name__ == '__main__':
  
    # Create an (empty) character to start with.
    crPerson = Character()
- 
-   # Do all the pre-career character generation steps.
-   crPerson.createUpToCareer()
-   crPerson.lastCareer = 'Corporate Repo'
- 
-   # Do basic training for this person
-   crCareer.doBasicTraining(crPerson)
 
-   endReason = None 
-   while endReason is None:
-      endReason = crCareer.doOneTerm(crPerson)
-
-   crPerson.endReason = endReason
-   crPerson.history.append(endReason)
-   crCareer.doMusteringOut(crPerson)
+   crPerson.createUsingTimeline(career=crCareer)
 
    print(crPerson.strSmall())
    print(crPerson.strHistory())
