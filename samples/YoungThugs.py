@@ -37,7 +37,7 @@ class YoungThug(Character):
       super().__init__()
       Rpggen.clear()
       try:
-         Rpggen.load("YoungThugs.rpggen")
+         Rpggen.load("Setting.rpggen")
       except:
          print('Warning: could not find data file YoungThugs.rpggen.') 
          print(sys.exc_info()[1])       

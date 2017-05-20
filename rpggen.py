@@ -1,8 +1,10 @@
 
 import os
 
-import json, logging, re, random, sys, string
+import  json, logging, re, random, sys, string
+
 from bottle import SimpleTemplate
+from jsoncomment import JsonComment
 
 def use(arg):
     return Rpggen.finduse(arg)
@@ -149,7 +151,8 @@ class Rpggen:
       if not os.path.isfile(filename) and optional:
          return
       with open(filename, 'r') as file:
-         Rpggen.raw = json.load(file)
+         jsonComment = JsonComment(json)
+         Rpggen.raw = jsonComment.load(file)
       for d in Rpggen.raw :
         if "text" in d :
             #print("loaded template: "+d['id'])
