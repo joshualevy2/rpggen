@@ -260,7 +260,7 @@ class Character():
       return self.__dict__
 
    def dm(self, attr):
-      attr = attr.tolower()
+      attr = attr.lower()
       if attr == 'dex': return Traveller.dm(self.dex)
       if attr == 'end': return Traveller.dm(self.end)
       if attr == 'int': return Traveller.dm(self.int)

@@ -1,12 +1,39 @@
 
+# This file contains general tables for one Setting.
+# It is a json + comments file as parsed by Python's jsoncomments module.
+#
+# This file holds several tables which are commonly used and which are
+# specific to a setting.  For example, in some places almost everyone is 
+# human, and the Race table should reflect that.  In other places, the 
+# Race table should be much more varied.
+#
+# For consistency purposes, if you create local versions of this file, 
+# please give them different names, such as SettingXxxxx where "Xxxxx"
+# is the polity or planet they apply to.  For example SettingGlisten for
+# a Settings file that covers the Glisten system.
+#
+# This is the minimum list of tables that should be here:
+#    Race
+#    Weapons: Blugeoning, EnergyPistol, EnergyRifle, Natural, Piercing, 
+#             Shotgun, SlugPistol, SlugRifle, Slashing
+
+# Please keep all tables in alphabetical order!
+#
+
 [
 { 
     "id": "WeaponsBlugeoning",
+    "description": "Weapons that use the Blugeoning skill.",
     "1": "Metal Pipe",
     "2": "Club",
     "3": "Sporting Bat (Baseball, Cricket, or Similar)",
     "4": "Wrench or similar tool",
     "5": "Blackjack"
+},
+{ 
+    "id": "WeaponsNatural",
+    "description": "Not used in Joshua's House Rules",
+    "1-12": "Small Knife"
 },
 { 
     "id": "WeaponsPiercing",

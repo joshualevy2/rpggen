@@ -10,7 +10,10 @@ pip install yattag
 pip install jsoncomment
 ```
 
-Testing is done with unittest.
+Testing is done with unittest. (Right now, this is windows specific.):
+
+   cd tests
+   ./testall
 
 # Running Rpggen Programs
 
