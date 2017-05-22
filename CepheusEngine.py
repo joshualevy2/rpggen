@@ -34,10 +34,12 @@ class Character(Character):
               'PhysicalSciences', 'SocialSciences', 'SpaceSciences', 'Steward',
               'Streetwise','Tactics', 'Zero-G']
 
-   skillTab = Table('skills', skills)
+   skillTab = None 
 
    def __init__(self):
       super().__init__()
+      if Character.skillTab is None:
+         Character.skillTab = Table('skills', Character.skills)
       
    def createUpToCareer(self):
       self.history.append('Birth')

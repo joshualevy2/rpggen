@@ -79,7 +79,7 @@ def help():
          with tag('p'):
            text('This is an experimental server run by Joshua Levy.  '
                 'It is running a collection of micro services which return data useful '
-                'in roll playing games.')
+                'in role playing games.')
          with tag('p'):
            text('You can always goto %s/help to get this help message.' % baseUrl)  
           
@@ -105,6 +105,10 @@ def help():
                     'You can think of this as the REST API for the micro-service.  '
                     'Note that the data structure is usually a dictionary, but sometimes '
                     'list.  Each micro-service\'s help page will more details on that.') 
+            with tag('dt'):
+               text('jsonHtml')
+            with tag('dd'):
+               text('Json results, but wrapped in HTML so people can read them more easily.')                
             with tag('dt'):
                text('html')
             with tag('dd'):
@@ -165,7 +169,7 @@ def pGlobalHelp():
          formatting.link(tag, text, '%s/p/1000words/3?format=json' % baseUrl)
          doc.stag('br')
          text('Or try this: ')
-         formatting.link(tag, text, '%s/p/1000words/3?format=html' % baseUrl)
+         formatting.link(tag, text, '%s/p/100words/3?format=html' % baseUrl)
 
    globalHelp += doc.getvalue()   
 
@@ -201,22 +205,35 @@ def pHelp():
                  'Examples of use include:')
          with tag('ul'):
             with tag('li'):
-               formatting.link(tag, text, '%s/p/1000words/3 ' % baseUrl)  
+               formatting.link(tag, text, '%s/p/1000words/3' % baseUrl) 
+               text('  Prints out 3 selections from a list of 1000 personality traits.')
             with tag('li'):
-               formatting.link(tag, text, '%s/p/100words/30 ' % baseUrl)  
+               formatting.link(tag, text, '%s/p/100words/30?format=text' % baseUrl) 
+               text('  Prints out 30 selections from a list of 100 personality traits, and '
+                    'show them in text format.')
             with tag('li'):
-               with tag('a', href='%s/p/help' % baseUrl):
-                 text('%s/p/help' % baseUrl)
-               text(' To see this help message.')                               
+               formatting.link(tag, text, '%s/p/help' % baseUrl)
+               text(' To see this help message.') 
+         with tag('p'):
+            text('The URL text right after the "/p/" determines how the personality will '
+                 'be generated:')                              
          with tag('dl'):
             with tag('dt'):
                text('1000words')
             with tag('dd'):
                text('Choose personality traits from a list of 1000 words.')
+               doc.stag('br')
+               text('This list was originally created by Chad Samuels and publicised on Johnn '
+                    'Four\'s Roleplaying Tips blog.  You can read more about it here:')
+               formatting.link(tag, text, 'https://roleplayingtips.com/tools/1000-npc-traits')               
             with tag('dt'):
                text('100words')
             with tag('dd'):
-              text('Choose personality traits from a list of 100 words.')    
+               text('Choose personality traits from a list of 100 words.')   
+               doc.stag('br') 
+               text('This list was originally created on the Other Worlds RPG Blog.  You can '
+                    'read more about it here:')
+               formatting.link(tag, text, 'https://otherworldsrpg.wordpress.com/2012/06/28/d100-random-npc-personality-traits-table')
          with tag('p'):
                text('The following format varibles are supprted:')              
          with tag('dl'):
@@ -235,17 +252,21 @@ def pHelp():
             with tag('dt'):
                text('json')
             with tag('dd'):
-               text('Your results, encoded as a list, ready for use by other programs.  '+
+               text('Your results, encoded as a list, ready for use by other programs.  '
                     'You can think of this as the REST API for a personality service.')
+            with tag('dt'):
+               text('jsonHtml')
+            with tag('dd'):
+               text('Json results, but wrapped in HTML so people can read them more easily.')               
 
          with tag('p'):
             with tag('b'):
                text('My Reuqest To Users')
          with tag('p'):
-            text('Please send me feedback on the personality traits this web page gives you! '+
-                 'You can send email to joshualevy2 @ hotmail dot com, or join the discussion '+
-                 'on the CoTI software forum here: ')   
-            formatting.link(tag, text, 'http://www.travellerrpg.com/CotI/Discuss/forumdisplay.php?f=63')
+            text('Please send me feedback on the personality traits this web page gives you! '
+                 'You can send email to publicjoshualevy at g mail dot com, or send a private '
+                 'message to joshualevy on the CoTI software forum here: ')   
+            formatting.link(tag, text, 'http://www.travellerrpg.com/CotI/Discuss/')
          with tag('p'):
             with tag('b'):
                text('Advice On Using This Website')
@@ -289,8 +310,11 @@ def PersonalityTraits1000(method, num=3):
    elif request.query.format == 'htmlText':
       return '<pre>'+formatting.text(results)+'</pre>'
    elif request.query.format == 'json':
-      return json.dumps(results, default=lambda o: o.__dict__, 
-                     sort_keys=True, indent=4) 
+      #return json.dumps(results, default=lambda o: o.__dict__, 
+      #               sort_keys=True, indent=4)     
+      return Rpggen.toJson(results) 
+   elif request.query.format == 'jsonHtml':
+      return '<pre>'+Rpggen.toJson(results)+'</pre>'       
    elif request.query.format == 'text':
       return formatting.text(results) 	  
    else:
@@ -307,17 +331,17 @@ def ytGlobalHelp():
    with tag('h2'):
          text('Young Thug Micro-Servers: Young Thugs NPCs')
    with tag('p'):
-      text('The guys hanging around bars, alleys, docks, etc.  They are 16-22 years '
+      text('The guys hanging around bars, alleys, docks, crime scenes, etc.  They are 16-22 years '
            'old (0 or 1 terms) and light on skills, but heavy on weapons!')
    with tag('blockquote'):
-         text("If you're a GM get several thugs, and choose one to use: ")
-         formatting.link(tag, text, '%s/yt?format=htmlPage' % baseUrl)
-         doc.stag('br')
-         text('If you want a REST interface with a json response, try this: ')
-         formatting.link(tag, text, '%s/yt?format=json' % baseUrl)
-         doc.stag('br')
-         text('Get help: ')
-         formatting.link(tag, text, '%s/yt/help' % baseUrl)
+      text("If you're a GM get several thugs, and choose one to use: ")
+      formatting.link(tag, text, '%s/yt?format=htmlPage' % baseUrl)
+      doc.stag('br')
+      text('If you want a REST interface with a json response, try this: ')
+      formatting.link(tag, text, '%s/yt?format=json' % baseUrl)
+      doc.stag('br')
+      text('Get help: ')
+      formatting.link(tag, text, '%s/yt/help' % baseUrl)
 
    globalHelp += doc.getvalue()   
 
@@ -325,7 +349,102 @@ ytGlobalHelp()
 
 @route('/yt/help')
 def ytHelp():
-    return 'This server returns one young thug in plain text format'
+   doc, tag, text = Doc().tagtext()
+   with tag("html"):
+      with tag("head"):
+         with tag('style'):
+            text('''dl {
+   # border: 3px double #ccc;
+   # padding: 0.5em;
+  }
+  dt {
+    float: left;
+    clear: left;
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+  }
+  dt::after {
+    content: ":";
+  }
+  dd {
+    margin: 0 0 0 110px;
+    padding: 0 0 0.5em 0;
+  }''')
+      with tag("body"):
+         with tag('p'):
+            text('The guys hanging around bars, alleys, docks, crime scenes, etc.  They '
+                 'are 16-22 years '
+                 'old (0 or 1 terms) and light on skills, but heavy on weapons!')
+
+         text("If you're a GM get several thugs, and choose one to use: ")
+         formatting.link(tag, text, '%s/yt?format=htmlPage' % baseUrl)
+         doc.stag('br')
+         text('If you want a REST interface with a json response, try this: ')
+         formatting.link(tag, text, '%s/yt?format=json' % baseUrl)
+         doc.stag('br')
+         text('To see this page again: ')
+         formatting.link(tag, text, '%s/yt/help' % baseUrl)
+         with tag('p'):
+               text('The following format varibles are supprted:')              
+         with tag('dl'):
+            with tag('dt'):
+               text('html')
+            with tag('dd'):
+               text('Results formatted in html; best for human viewing.')
+            with tag('dt'):
+               text('text') 
+            with tag('dd'):
+               text('Plain text.  Looks ugly in browsers, but great for cut-n-paste.')
+            with tag('dt'):
+               text('htmlText')
+            with tag('dd'):
+               text('The same as text, but formatted so that it looks ok in html.')
+            with tag('dt'):
+               text('json')
+            with tag('dd'):
+               text('Your results, encoded as a list, ready for use by other programs.  '
+                    'You can think of this as the REST API for a personality service.')
+            with tag('dt'):
+               text('jsonHtml')
+            with tag('dd'):
+               text('Json results, but wrapped in HTML so people can read them more easily.')                
+
+         with tag('p'):
+            with tag('b'):
+               text('My Reuqest To Users')
+         with tag('p'):
+            text('Please send me feedback on the personality traits this web page gives you! '
+                 'You can send email to publicjoshualevy at g mail dot com, or send a private '
+                 'message to joshualevy on the CoTI software forum here: ')   
+            formatting.link(tag, text, 'http://www.travellerrpg.com/CotI/Discuss/')
+         with tag('p'):
+            with tag('b'):
+               text('Advice On Using This Website')
+         with tag('p'):
+            text('For NPCs, I think that the best way to generate a personality is to run this command:') 
+         with tag('blockquote'):
+            with tag('a', href='https://joshualevy.pythonanywhere.com/p/1000words/3'):
+               text('https://joshualevy.pythonanywhere.com/p/1000words/3') 
+         with tag('p'): 
+            text("And then toss out any traits that don't fit, and arrage the rest in order of "+
+                 "importance.  Most important first.  It's quick, easy, and I've found that it "+
+                 "gives results which are both good and useful. If you find that you are tossing "+
+                 "out more than 2 traits on average, then start out with 4 or more.  The goal is "+
+                 "to end up with 2 or 3 good ones, in the order you like.")  
+         with tag('p'):
+            text('For PCs, the method above works ok, not great.  I prefer a different '+
+                 'technique which is not supported yet, but will be soon.') 
+      #   with tag('blockquote'):
+      #      with tag('a', href='https://joshualevy.pythonanywhere.com/p/1000words/3'):
+      #         text('https://joshualevy.pythonanywhere.com/p/1000words/3')   
+      #   with tag('p'): 
+      #      text("And then toss out any traits that don't fit, and arrage the rest in order of "+
+      #           "importance, most important first.  It's quick, easy, and I've found that it "+
+      #           "gives results which are both good and useful. If you find that you are tossing "+
+      #           "out more than 2 traits on average, then start out with 4 or more.  The goal is "+
+      #           "to end up with 2 or 3 good ones, in the order you like.") 
+   return doc.getvalue()   
 
 @route('/yt')
 def youngthug():
@@ -338,11 +457,16 @@ def youngthug():
    elif request.query.format == 'text':
       return yt.strSmall()
    elif request.query.format == 'htmlPage':
-      return yt.htmlPage()      
+      return yt.htmlPage()
+   elif request.query.format == 'json':
+      return Rpggen.toJson(yt)  
+   elif request.query.format == 'jsonHtml':
+      return '<pre>'+Rpggen.toJson(yt)+'</pre>' 
    else:
       return ('Unknown format query variable.'
               '  Right now, only "text", "html", and "htmlPage" is supported.')
 
+rpggen = Rpggen()
 PersonalityTraits100Tab = Rpggen.loadLt("PersonalityTraits100.lt")
 PersonalityTraits1000Tab = Rpggen.loadLt("PersonalityTraits.lt")
 if development:

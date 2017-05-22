@@ -1,4 +1,7 @@
+
+import logging
 import random
+import string
 import sys
 import unittest
 import json
@@ -12,8 +15,11 @@ from Traveller import Attribute, Traveller
 
 # TODO Why not CepheusEngine.Character?
 class YoungThug(Character):
-
+   # Updated when improvements are made to the generation algorithm.
    version = '0.1'
+
+   # Tables are class variables, not object variables, so that when we print out the YoungThug
+   # class as a json string, we do NOT include these tables.
 
    meleeSkills = Table("MeleeSkills", ['Melee Combat (Blugeoning)', 'Melee Combat (Piercing)',
 		                                   'Melee Combat (Slashing)'], unique=True)
@@ -29,30 +35,28 @@ class YoungThug(Character):
 		                 unique=True)
    # This is a very generic table, which should be overwritten by a better one in the
    # setting table
-   possessionsTable = Table('PossetionsTable',
+   possessionsTable = Table('PossessionsTable',
                             ['Key', 'Legal Drugs', 'Illegal Drugs', 'Gambling Materials',
                              'Gear Bag', 'Shades', 'Pet', 'Religious Figurine', 'Feather',
                              'Rock'])
-
-   try:
-      Rpggen.load("Setting.rpggen")
-   except:
-      print('Warning: could not find data file YoungThugs.rpggen.') 
-      print(sys.exc_info()[1])    
-   try:
-      personalityTable = Rpggen.loadLt("PersonalityTraits.lt")
-   except:
-      personalityTable = None 
+   personalityTable = Rpggen.loadLt("PersonalityTraits.lt") 
 
    def __init__(self):
       super().__init__()
       Rpggen.clear()
+      try:
+         Rpggen.load("Setting.rpggen")
+      except:
+         print('Warning: could not find data file Setting.rpggen.') 
+         print(sys.exc_info()[1])    
+     
 
    def generate(self):
       '''Create a young thug.
       '''
       Rpggen.clear()
       self.name = GetFromWeb.get('names')
+      self.name = string.capwords(self.name)
       self.lastCareer = "No Career"    
       self.str = Rpggen.roll('2d5+2')
       self.dex = Rpggen.roll('2d5+2')
@@ -61,8 +65,8 @@ class YoungThug(Character):
       self.edu = Rpggen.roll('2d2')
       self.soc = Rpggen.roll('2d3')
 
-      if self.personalityTable is not None:
-         self.personality = self.personalityTable.rollRepeatedly(3, unique=True)
+      if YoungThug.personalityTable is not None:
+         self.personality = YoungThug.personalityTable.rollRepeatedly(3, unique=True)
 
       level = Select.choose(['teen','start', 'young'])
       if level == 'teen':
@@ -125,7 +129,7 @@ class YoungThug(Character):
             num = Rpggen.roll('3d3')
          else:
             num = Rpggen.roll('2d2')
-         self.possessions = Rpggen.find('PossetionsTable').rollRepeatedly(num)
+         self.possessions = Rpggen.find('PossessionsTable').rollRepeatedly(num)
 
 
 
@@ -141,16 +145,23 @@ class YoungThug(Character):
          default = weapon
       tableName = 'Weapons'+weapon
       try: 
-         self.equipment.append(Rpggen.finduse(tableName))
-      except:            
-         self.equipment.append(default)
+         equipment = Rpggen.finduse(tableName)
+         if equipment is None or equipment == '':
+            logging.warning('Using equipment table %s returned None or "".' % tableName)
+         else:
+            self.equipment.append(equipment)
+      except:
+         logging.warning('Table %s not found, but should have been in Settings.rpggen.' %
+                        tableName)
+         logging.warning(sys.exc_info()[1])    
+         self.equipment.append(default+' Weapon')         
 
    def text(self):
       return self.strSmall()
 
    def html(self):
        doc, tag, text = Doc().tagtext()
-       text('Name: %s        %s  %d years old' % (self.name, self.strUpp(),self.age))
+       text('Name: %s --- %s --- %d years old' % (self.name, self.strUpp(),self.age))
        doc.asis('<br>')
        text('%s (%d term%s)              Cr%d' % (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""), self.availableMoney()))
        doc.asis('<p>')
@@ -161,7 +172,7 @@ class YoungThug(Character):
        doc.asis('<br>') 
        text('Equipment: %s' % ', '.join(self.equipment))
        doc.asis('<br>')
-       #text('Possessions: %s' % ', '.join(self.possesions))
+       text('Possessions: %s' % ', '.join(self.possessions))
        doc.asis('<br>')       
        text('Money: %d in pocket, %d in bank, %d in pension' %
                   (self.money['pocket'], self.money['bank'], self.money['pension']))
@@ -175,7 +186,7 @@ class YoungThug(Character):
       return '<pre>'+self.strSmall()+'</pre>'  
 
    @classmethod
-   def htmlPage(self, count=10):
+   def htmlPage(self, count=8):
       characters = []
       for ii in range(count):
          characters.append(YoungThug())
@@ -191,12 +202,14 @@ class YoungThug(Character):
                   with tag("tr", border=2):
                     for jj in range(2):
                       with tag('td', width = '50%', height = '25%', padding='15', border=2, style='word-wrap:break-word;'):
-                        ch = characters[ii+(jj-1)]
+                        ch = characters[((ii*2)+(jj-1))-1]
                         tmp = ch.html()
                         doc.asis(tmp)
             doc.asis('<br>')
             with tag('small'):
                with tag('center'):
+                  text('Traveller is a registered trademark of Far Future Enterprises.')
+                  doc.stag('br')
                   text('Generated by Joshua Levy "Young Thugs" web server in 2017 version %s' % self.version)
       return doc.getvalue()
 
@@ -205,8 +218,6 @@ if __name__ == '__main__':
     yt.generate()
     print(yt.strSmall())
     print(Rpggen.toJson(yt))
-    #print(json.dumps(yt, default=lambda o: o.__dict__, 
-    #                 sort_keys=True, indent=4))
 
     str = YoungThug.htmlPage()
     print(str)

@@ -9,7 +9,7 @@ if development:
 else:
    sys.path.append('/home/joshualevy/rpggen')
 
-from rpggen import Rpggen, Table
+from Rpggen import Rpggen, Table
 
 @route('/request')
 def r():

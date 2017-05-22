@@ -31,27 +31,29 @@ class Dice:
 
 class Rpggen:
     '''This is a singleton class (so it operates more like a library.
-    '''
-    raw = {}
+    '''        
     tables = {}
     templates = {}
     keywords = {}
     dice = {}
     testData = None
     customizations = {}
+    raw = []
 
-    def clear():
-       for (name, tab) in Rpggen.tables.items():
+    @classmethod
+    def clear(cls):
+       for (name, tab) in cls.tables.items():
           tab.clear()
 
-    def getCustomization(name, default=None):
+    @classmethod
+    def getCustomization(cls, name, default=None):
       '''Returns the customization value, or the second argument, if that
          customization is not set, or None if the second argument is empty.
       '''
-      if Rpggen.customizations is None:
+      if cls.customizations is None:
          return default
       try:
-         result = Rpggen.customizations[name]
+         result = cls.customizations[name]
          return result
       except KeyError:
          return default    
@@ -77,38 +79,42 @@ class Rpggen:
        (k,v) = getNth(table,nn)
        return (k,v)  
 
-    def setAllCustomizations(customizations):
+    @classmethod
+    def setAllCustomizations(cls, customizations):
       '''Sets all customizations by replacing whatever is there with those listed
          in the argument.  Previous customizations are lost, even if their is non-standard
          similar customization in the argument.
       '''
-      Rpggen.customizations = customizations
+      cls.customizations = customizations
 
-    def setCustomization(name, value):
+    @classmethod
+    def setCustomization(cls, name, value):
       '''Sets one customization.  Either changes the value, if it already exists,
          or creates it new, with the given value.
       '''
-      Rpggen.customizations[name] = value
+      cls.customizations[name] = value
     
-    def setup(customizations=None, logger=None):
-       if customizations is not None:
-          setAllCustomizations(customizations)
+    @classmethod
+    def setup(cls, customizations=None, logger=None):
+       if cls.customizations is not None:
+          cls. setAllCustomizations(customizations)
        if logger is not None:
           pass
 
-    def use(obj) :
+    @classmethod
+    def use(cls, obj) :
         #print(obj)
         if isinstance(obj,"".__class__) :
             #print("roll: "+obj)
-            return str(Rpggen.roll(obj))
+            return str(cls.roll(obj))
         elif obj['_type'] == 'dice' :
             #print("dice: "+obj['roll'])
-            return str(Rpggen.roll(obj['roll']))
+            return str(cls.roll(obj['roll']))
         elif obj['_type'] == 'template' or 'text' in obj :
            template = SimpleTemplate(obj['text'])
            return template.render(use=use,rpggen=Rpggen)
         elif obj['_type'] == 'table' or ('roll' in obj and 'rows' in obj) :
-           roll = Rpggen.roll(obj['roll'])
+           roll = cls.roll(obj['roll'])
            for row in obj['rows'] :
               if roll >= row.start and roll <= row.stop :
                   if row.result != "" :
@@ -122,38 +128,47 @@ class Rpggen:
         else :
            return 'ERROR: wrong object type'
 
-    def find(name):
+    @classmethod
+    def find(cls, name, debug=False):
         #print("finduse: "+name)    
         try:
-           tab = Rpggen.tables[name]
+           tab = cls.tables[name]
            return tab 
         except:   
-#           print(Table.names())
-#           print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
-#           raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
-            return None
+           if debug:
+              print(Table.names())
+              print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+           return None
 
-    def finduse(name):
-        #print("finduse: "+name)
-        # TODO: why look in both raw and tables?
-        for d in Rpggen.raw :
-            if d['id'] == name :
-               return Rpggen.use(d)        
+    @classmethod
+    def finduse(cls, name, debug=False):
+        if debug:
+           print('Calling Rpggen.finduse(%s) with debug=True' % name)  
         try:
-           tab = Rpggen.tables[name]
-           return tab.use()  #Rpggen.use(tab)
-        except:
+           tab = cls.tables[name]
+           return tab.use(debug=debug)  
+        except KeyError:
+           if debug:
+              print('No Rpggen.tables[%s]' % name)
+              print(sys.exc_info()[1])
            pass
+        # TODO: why look in both raw and tables?
+        for d in cls.raw :
+            if d['id'] == name :
+               if debug:
+                  print('Found in Rpggen.raw')              
+               return cls.use(d)   
         try:
            re.split(r'[d+-]',name)  # JCL used to have backslashes before + and -
-           return str(Rpggen.roll(name))
-        except:   
-           print(Table.names())
-           print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
-           raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
-        return ""
-     
-    def load(filename, optional=False):
+           return str(cls.roll(name))
+        except ValueError:
+           pass   
+        print(Table.names())
+        print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
+        raise ValueError("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.")
+
+    @classmethod     
+    def load(cls, filename, optional=False, debug=False):
       '''Loads an rpggen file into the program.
          optional=True if the file is optional: no error message if not found.
       '''
@@ -163,15 +178,15 @@ class Rpggen:
          return
       with open(filename, 'r') as file:
          jsonComment = JsonComment(json)
-         Rpggen.raw = jsonComment.load(file)
-      for d in Rpggen.raw :
+         cls.raw = jsonComment.load(file)
+      for d in cls.raw :
         if "text" in d :
             #print("loaded template: "+d['id'])
             d['_type'] = 'template'
             if re.search(r'.tmpl$',d['text']) :
                 with open(d['text'],'r') as template_file :
                     d['text'] = template_file.read()
-            Rpggen.templates[d['id']] = d
+            cls.templates[d['id']] = d
         if len(d) == 1 :
             for k in d :    # there is only one
                 id = k
@@ -180,7 +195,7 @@ class Rpggen:
                 if diceRE.search(d[k]) :
                     d['_type'] = 'dice'
                     d['roll'] = d[id]
-                Rpggen.dice[d['id']] = d
+                cls.dice[d['id']] = d
             else :
                 d['_type'] = 'table'
                 d['rows'] = [ ]
@@ -192,39 +207,26 @@ class Rpggen:
                     ii += 1
                     d['rows'].append(row)
                 d['roll'] = "1d"+str(ii)
-                Rpggen.tables[d['id']] = d
+                cls.tables[d['id']] = d
             #print("singleton"+str(d))
         else :
-            #print("loaded table: "+d['id'])
-            rows = []
+            tableId = d['id']
+            if debug == True:
+               print("loading table: "+tableId)
+            rows = {}
             maxnum = -sys.maxsize
             minnum = sys.maxsize
             for k in d :
-                if startnum.search(k) :
-                    sss = k.split('-')
-                    row = Row()
-                    row.start = int(sss[0])
-                    row.stop = row.start
-                    if len(sss) == 2 :
-                       row.stop = int(sss[1])
-                    row.result = d[k]
-                    rows.append(row)
-                    # keeping track of smallest and largest if needed to create the roll
-                    if row.stop > maxnum :
-                        maxnum = row.stop
-                    if row.start < minnum :
-                        minnum = row.start
-            tab = Table(d['id'],rows)
-            if not 'roll' in d :
-                tab.dice = str(minnum)+"d"+str(int(maxnum/minnum))
+                if startnum.search(k):
+                    rows[k] = d[k]
+            tab = Table(tableId, rows)
             if not 'unique' in d:
                tab.unique = False
             else:
                tab.unique = d['unique']
-            # TODO if table is already there.
-            Rpggen.tables[d['id']] = tab
 
-    def loadLt(filename):
+    @classmethod
+    def loadLt(cls, filename):
        '''Loads an rpggen file into the program.
           Throws an exception if the file is not found.
        '''
@@ -249,10 +251,14 @@ class Rpggen:
        tab = Table(tableName, entries)
        return tab
 
-    def roll(diceStr):
+    @classmethod
+    def roll(cls, diceStr, debug=False):
+       '''Rolls RPG style dice.
+          Pass debug=True to print out debugging information.
+       '''
        d66match = re.search(r'[dD]6(6+)',diceStr)
-       if d66match is not None and Rpggen.getCustomization('d66support', False):
-          return Rpggen.rollconcat(diceStr)   
+       if d66match is not None and cls.getCustomization('d66support', False):
+          return cls.rollconcat(diceStr)   
        match = re.search(r'([0-9]+o)?([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
        if match == None:
            raise ValueError('%s was not a dice roll' % diceStr)
@@ -271,11 +277,11 @@ class Rpggen:
        except:
           raise ValueError('Error in dice size while rolling %s.' % diceStr)
        for ii in range(diceNum) :
-           if Rpggen.testData == None:
+           if cls.testData == None:
               total += random.randint(1,diceSize)
            else:
               # TODO if testData out of range
-              total += Rpggen.testData
+              total += cls.testData
        diceAdjustment = match.group(5)
        if diceAdjustment is not None :
            try:
@@ -285,7 +291,8 @@ class Rpggen:
               raise ValueError('Error in adjustment while rolling %s in the %s part.' % (diceStr, diceAdjustment))
        return total
 
-    def rollconcat(diceStr):
+    @classmethod
+    def rollconcat(cls, diceStr):
        '''Supports d6 only.
           Traveller
        '''
@@ -293,18 +300,24 @@ class Rpggen:
        numDice = len(diceStr)-1
        for ii in range(numDice) :
            total = total * 10
-           if Rpggen.testData == None:
+           if cls.testData == None:
               total += random.randint(1,6)
            else:
               # TODO if testData out of range
-              total += Rpggen.testData
+              total += cls.testData
        return total
 
-    def toJson(obj):
+    @classmethod
+    def toJson(cls, obj):
+       '''Takes a Python object, such as a Character, and returns it as a json string.
+          This is a generic version, but if you create a new type of object that needs
+          a more specific version, you should write a method in that class.
+       '''
        return json.dumps(obj, default=lambda o: o.__dict__, 
                      sort_keys=True, indent=4)
-       
-    def chars(num, fro=string.ascii_lowercase) :
+
+    @classmethod       
+    def chars(cls, num, fro=string.ascii_lowercase) :
         result = ""
         for ii in range(num) :
             result += (random.choice(fro))
@@ -335,8 +348,11 @@ class Table:
    rows = []
    unique = False
    
-   def __init__(self, name, values=None, unique=None):
+   def __init__(self, name, values=None, unique=None, debug=False):
       # If is the first argument which is optional
+      if debug:
+         print('new Table with debug=True: name=%s, values=%s, unique=%s' %
+               name, values, unique)
       if values is None:
          values = name
          name = None
@@ -378,8 +394,9 @@ class Table:
             self.dice = str(minnum)+"d"+str(int(maxnum/minnum))                            
       else:
          raise TypeError('The values argument of this function must be a list or a dict, but is a %s' % type(x))      
-      if name is not None:   
-         #print('DEBUG adding table %s' % name)
+      if name is not None:
+         if debug:
+            print('Creating Table with debug=True adding %s to Rpggen.tables' % name)
          Rpggen.tables[name] = self
    
    def internal_check(self):
@@ -390,6 +407,9 @@ class Table:
          raise ValueError('Table %s has no dice set.' % printName)
       if len(self.rows) == 0:
          raise ValueError('Table %s has no rows in it.' % printName)
+      for row in self.rows:
+         if row.result is None:
+            logging.warning('Table %s has None as results.' % printName)
 
    @classmethod
    def names(cls):
@@ -407,9 +427,10 @@ class Table:
    def rollRepeatedly(self, num, unique=True):
       return self.useRepeatedly(num, unique)
 
-   def use(self, partof=None):
+   def use(self, partof=None, debug=False):
       self.internal_check()
-      logging.debug('%s %s %d' % (self.id, self.dice, len(self.rows)))
+      if debug:
+         print('Calling Table.use %s %s %d' % (self.id, self.dice, len(self.rows)))
       roll = Rpggen.roll(self.dice)
       for row in self.rows:
          if row.start <= roll <= row.stop:
@@ -430,12 +451,17 @@ class Table:
                                    (self.id, partof, len(self.rows)))
             # We've now found the right row, so mark it as used, and return it (or it's template)
             row.used = True
-            if row.result != "" :
+            if row.result != '' :
+               if debug:
+                  print('Raw result is %s %s' % (row.smallStr(), row.result))
                template = SimpleTemplate(row.result)
                finalResult = template.render(use=use,rpggen=Rpggen)
+               if debug:
+                  print('Returning %s' % str(finalResult))
                return finalResult
             else :
                return ''
+      print('Should never get here 666')         
 
    def useRepeatedly(self, num, unique=True):
       results = []
@@ -480,6 +506,8 @@ class Row:
    used = False
     
    def smallStr(self):
+      if self.start == self.stop:
+         return '[%d: %s]' % (self.start, self.result)
       return '[%d-%d: %s]' % (self.start, self.stop, self.result)
 
 # execute only if run as a script
@@ -487,7 +515,6 @@ if __name__ == "__main__":
     #print(len(sys.argv[1]))
     if len(sys.argv) == 1:
         # No arguments test something  then print out usage message
-        Rpggen.testData = 3
         print('d6 = %d' % Rpggen.roll('d6'))
         Rpggen.testData = None
         print('3d6 = %d' % Rpggen.roll('3d6'))
