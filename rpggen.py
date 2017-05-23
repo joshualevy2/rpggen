@@ -143,7 +143,7 @@ class Rpggen:
     @classmethod
     def finduse(cls, name, debug=False):
         if debug:
-           print('Calling Rpggen.finduse(%s) with debug=True' % name)  
+           print('Calling Rpggen.finduse(%s)' % name)  
         try:
            tab = cls.tables[name]
            return tab.use(debug=debug)  
@@ -351,7 +351,7 @@ class Table:
    def __init__(self, name, values=None, unique=None, debug=False):
       # If is the first argument which is optional
       if debug:
-         print('new Table with debug=True: name=%s, values=%s, unique=%s' %
+         print('new Table with: name=%s, values=%s, unique=%s' %
                name, values, unique)
       if values is None:
          values = name
@@ -396,7 +396,7 @@ class Table:
          raise TypeError('The values argument of this function must be a list or a dict, but is a %s' % type(x))      
       if name is not None:
          if debug:
-            print('Creating Table with debug=True adding %s to Rpggen.tables' % name)
+            print('Creating Table with adding %s to Rpggen.tables' % name)
          Rpggen.tables[name] = self
    
    def internal_check(self):
