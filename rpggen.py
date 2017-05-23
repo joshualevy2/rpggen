@@ -247,6 +247,7 @@ class Rpggen:
        return tab
 
     def roll(diceStr):
+       # TODO: Test and document
        d66match = re.search(r'[dD]6(6+)',diceStr)
        if d66match is not None and Rpggen.getCustomization('d66support', False):
           return Rpggen.rollconcat(diceStr)   
@@ -302,6 +303,7 @@ class Rpggen:
                      sort_keys=True, indent=4)
        
     def chars(num, fro=string.ascii_lowercase) :
+      #TODO non-random rolling
         result = ""
         for ii in range(num) :
             result += (random.choice(fro))
