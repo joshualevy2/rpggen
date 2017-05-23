@@ -20,8 +20,9 @@ if __name__ == "__main__":
     testroll("1d3+17") 
     testroll("17d3") 
     testroll("d66")
-    testroll("2o3d6")
-    testroll("3o4d6")
+    if False:   # 'o' is not yet supported
+       testroll("2o3d6")
+       testroll("3o4d6")
     print('Set d66support=True')
     Rpggen.setCustomization('d66support',True)
     testroll("d66")

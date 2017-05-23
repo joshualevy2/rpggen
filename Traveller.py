@@ -132,7 +132,7 @@ class Career():
         if benefit.startswith('+'):
            character.changeStr(benefit)
         else:
-           character.possesions.append(benefit)
+           character.possessions.append(benefit)
         character.history.append(benefit)
 
    def doOneTerm(self, character):
@@ -250,7 +250,7 @@ class Character():
       self.skills = []
       self.equipment = []
       self.money = { 'pocket': 0, 'bank': 0, 'pension': 0}
-      self.possesions  = []
+      self.possessions  = []
       self.history = []
 
 #   def internalCheck(self):
@@ -308,7 +308,7 @@ class Character():
       return self.__dict__
 
    def dm(self, attr):
-      attr = attr.tolower()
+      attr = attr.lower()
       if attr == 'dex': return Traveller.dm(self.dex)
       if attr == 'end': return Traveller.dm(self.end)
       if attr == 'int': return Traveller.dm(self.int)
@@ -345,7 +345,7 @@ class Character():
       '''Returns a character's characteristics as a string (a mini-character sheet).
       '''      
       result = ''
-      result += ('Name: %s        %s  %d years old\n' %
+      result += ('Name: %s --- %s --- %d years old\n' %
                  (self.name, self.strUpp(),self.age))
       result += ('%s (%d term%s) ended up with rank of %d    Cr%d\n' %
                  (self.strCareer(), self.terms, ("s" if (self.terms!=1) else ""),
@@ -356,8 +356,8 @@ class Character():
       result += 'Equipment: %s\n' % ', '.join(self.equipment)
       result += ('Money: %d in pocket, %d in bank, %d in pension\n' %
                  (self.money['pocket'], self.money['bank'], self.money['pension']))
-      if len(self.possesions) > 0:
-         result += 'Possesions: %s\n' % ', '.join(self.possesions)
+      if len(self.possessions) > 0:
+         result += 'Possesions: %s\n' % ', '.join(self.ossessions)
       result += '\n'
       return result
 

@@ -3,16 +3,17 @@
 
 This is a python3 application.
 
-To run it requires Bottle, which can be installed with:<br>
+To run it requires several libraries, which can be installed with:<br>
 ```shell
 pip install bottle
+pip install yattag
+pip install jsoncomment
 ```
 
-To develop, it requires unittest, which is part of default Python.
-Some of the sample applications use yattag, which can be installed using pip:
-```shell
-pip install yattag
-```
+Testing is done with unittest. (Right now, this is windows specific.):
+
+   cd tests
+   ./testall
 
 # Running Rpggen Programs
 
