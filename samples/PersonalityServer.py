@@ -422,28 +422,15 @@ def ytHelp():
             with tag('b'):
                text('Advice On Using This Website')
          with tag('p'):
-            text('For NPCs, I think that the best way to generate a personality is to run this command:') 
+            text('If you are a Game Master and want some young thugs, I '
+                 'would run the following command, and then choose asmany '
+                 'as you want. Rerun the command if you need more:') 
          with tag('blockquote'):
-            with tag('a', href='https://joshualevy.pythonanywhere.com/p/1000words/3'):
-               text('https://joshualevy.pythonanywhere.com/p/1000words/3') 
+            formatting.link(tag, text, '%s/yt?format=htmlPage' % baseUrl)
          with tag('p'): 
-            text("And then toss out any traits that don't fit, and arrage the rest in order of "+
-                 "importance.  Most important first.  It's quick, easy, and I've found that it "+
-                 "gives results which are both good and useful. If you find that you are tossing "+
-                 "out more than 2 traits on average, then start out with 4 or more.  The goal is "+
-                 "to end up with 2 or 3 good ones, in the order you like.")  
-         with tag('p'):
-            text('For PCs, the method above works ok, not great.  I prefer a different '+
-                 'technique which is not supported yet, but will be soon.') 
-      #   with tag('blockquote'):
-      #      with tag('a', href='https://joshualevy.pythonanywhere.com/p/1000words/3'):
-      #         text('https://joshualevy.pythonanywhere.com/p/1000words/3')   
-      #   with tag('p'): 
-      #      text("And then toss out any traits that don't fit, and arrage the rest in order of "+
-      #           "importance, most important first.  It's quick, easy, and I've found that it "+
-      #           "gives results which are both good and useful. If you find that you are tossing "+
-      #           "out more than 2 traits on average, then start out with 4 or more.  The goal is "+
-      #           "to end up with 2 or 3 good ones, in the order you like.") 
+            text('If a thug looks good, but has one bad personality trait, or '
+                 'one bad skill, or one bad anything, just remove it.  Or '
+                 'replace it with something different.')  
    return doc.getvalue()   
 
 @route('/yt')

@@ -37,8 +37,11 @@ class YoungThug(Character):
    # setting table
    possessionsTable = Table('PossessionsTable',
                             ['Key', 'Legal Drugs', 'Illegal Drugs', 'Gambling Materials',
-                             'Gear Bag', 'Shades', 'Pet', 'Religious Figurine', 'Feather',
-                             'Rock'])
+                             'Gear Bag', 'Shades', 'Broken Jewlery', 
+                             'Forgerly or Lockpicking Equipment', 'Jumk Food',
+                             'Gloves', 'Flask', 'Photo', 'Torn Up Photo', 'Mints',
+                             'Plastic Tie','Bandage(s) or BandAid(s)', 'Sanitizer',
+                             'Lip Balm or Handcream'])
    personalityTable = Rpggen.loadLt("PersonalityTraits.lt") 
 
    def __init__(self):
@@ -51,12 +54,14 @@ class YoungThug(Character):
          print(sys.exc_info()[1])    
      
 
-   def generate(self):
+   def generate(self, debug=False):
       '''Create a young thug.
       '''
       Rpggen.clear()
       self.name = GetFromWeb.get('names')
       self.name = string.capwords(self.name)
+      if debug:
+         print(self.name)
       self.lastCareer = "No Career"    
       self.str = Rpggen.roll('2d5+2')
       self.dex = Rpggen.roll('2d5+2')
@@ -72,16 +77,16 @@ class YoungThug(Character):
       if level == 'teen':
          self.age = Rpggen.roll('1d3+15')
          self.terms = 0  
-         numSkills = 3   # TODO right number?     
+         numSkills = 2   # TODO right number?     
       elif level == 'start':
          self.age = Rpggen.roll('1d3+17')
          self.terms = 0     
-         numSkills = 5   #  
+         numSkills = 3   #  
       elif level == 'young':
          self.lastCareer = "Rogue"   
          self.age = Rpggen.roll('1d3+21')
          self.terms = 1
-         numSkills = 9 # TODO right number?  Basic Training plus above.
+         numSkills = 5 # TODO right number?  Basic Training plus above.
       else:
          raise ValueError('level is an unknown value: %s' % level)
 
@@ -95,21 +100,43 @@ class YoungThug(Character):
     # young get 7 skills at 1, rest at 0   (20% change a 1 to a 2)
 
     # lucky means the character get more skills
-      lucky = (Rpggen.roll('1d5') == 1)
-      for idx in range(1, numSkills):
+      lucky = Rpggen.roll('1d3')-2
+      numSkills += lucky
+      if numSkills < 2:
+          numSkills = 2
+      if numSkills > 6:
+          numSkills = 6          
+
+      for idx in range(1, numSkills+1):
          if idx < 7:
-          if idx % 3 == 1:
-             skill = Attribute(self.meleeSkills.use(),0)
-             self.skills.append(skill)
-          if idx % 3 == 2:
-             skill = Attribute(self.weaponSkills.use(),0)
-             self.skills.append(skill) 
-          if idx % 3 == 0:
-             skill = Attribute(self.otherSkills.use(),0)
-             self.skills.append(skill)
+            if (idx % 3) == 1:
+               skill = Attribute(self.meleeSkills.use(),0)
+               self.skills.append(skill)
+            elif (idx % 3) == 2:
+               skill = Attribute(self.weaponSkills.use(),0)
+               self.skills.append(skill) 
+            elif (idx % 3) == 0:
+               skill = Attribute(self.otherSkills.use(),0)
+               self.skills.append(skill)
+            else:
+               print('bad %d %d' % (idx, (idx % 3)))
          else:
              skill = Attribute(self.otherSkills.use(),0)
-             self.skills.append(skill)       	
+             self.skills.append(skill) 
+
+      if level == 'teen':
+         attr = Select.choose(self.skills,1)
+         self.addToSkill(attr.name, attr.specific, 1)
+      elif level == 'start':
+         attrs = Select.choose(self.skills,2)
+         for attr in attrs:
+            self.addToSkill(attr.name, attr.specific, 1)  
+      elif level == 'young':
+         attrs = Select.choose(self.skills,2)
+         for attr in attrs:
+            self.addToSkill(attr.name, attr.specific, 1) 
+      else:
+         raise ValueError('level is an unknown value: %s' % level)                 	
 
       # Loop through each skills, and give any equipment that makes sense.
       for attr in self.skills:
@@ -126,11 +153,10 @@ class YoungThug(Character):
       # What is the thug carrying?
       if self.possessionsTable is not None:
          if self.money['bank'] > 300:
-            num = Rpggen.roll('3d3')
+            num = Rpggen.roll('3d2')
          else:
             num = Rpggen.roll('2d2')
          self.possessions = Rpggen.find('PossessionsTable').rollRepeatedly(num)
-
 
 
       # Add some events
@@ -177,6 +203,10 @@ class YoungThug(Character):
        text('Money: %d in pocket, %d in bank, %d in pension' %
                   (self.money['pocket'], self.money['bank'], self.money['pension']))
        doc.asis('<br>')
+       #with tag('ol'):
+       #   for history in self.history:
+       #      with tag('li'):
+       #         text(history)
        return doc.getvalue() 
 
    def htmlText(self):

@@ -326,7 +326,9 @@ class Rpggen:
 class Select:
 
    @classmethod
-   def choose(cls,myList, number=1):
+   def choose(cls,myList, number=1, debug=False):
+      if debug:
+         print('Select.choose(%s,%d)' % (myList,number))
       if number == 1:
          if Rpggen.testData == None:
             return random.choice(myList)
@@ -339,7 +341,7 @@ class Select:
       else:
          result = []
          for idx in range(number):
-            pass
+            result.append(random.choice(myList))
          return result
 
 class Table:
