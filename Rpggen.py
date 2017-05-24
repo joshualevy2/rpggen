@@ -256,6 +256,7 @@ class Rpggen:
        '''Rolls RPG style dice.
           Pass debug=True to print out debugging information.
        '''
+       # TODO: Test and document
        d66match = re.search(r'[dD]6(6+)',diceStr)
        if d66match is not None and cls.getCustomization('d66support', False):
           return cls.rollconcat(diceStr)   
@@ -318,6 +319,7 @@ class Rpggen:
 
     @classmethod       
     def chars(cls, num, fro=string.ascii_lowercase) :
+        #TODO non-random rolling
         result = ""
         for ii in range(num) :
             result += (random.choice(fro))
