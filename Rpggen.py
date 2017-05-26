@@ -317,6 +317,10 @@ class Rpggen:
        return json.dumps(obj, default=lambda o: o.__dict__, 
                      sort_keys=True, indent=4)
 
+    def unique(setting):
+       self.unique = setting
+       self.clear()
+       
     @classmethod       
     def chars(cls, num, fro=string.ascii_lowercase) :
         #TODO non-random rolling
