@@ -256,10 +256,13 @@ class Character():
 #   def internalCheck(self):
 #      if
 
-   def addToSkill(self, name, value):
+   def addToSkill(self, name, specific, value=None):
       # TODO: do we need this?
+      if value is None:
+         value = specific
+         specific = None
       for skill in self.skills:
-         if name == skill.name:
+         if name == skill.name and specific == skill.specific:
             skill.value += value
 
    def availableMoney(self):
