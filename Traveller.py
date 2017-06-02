@@ -444,8 +444,10 @@ class Traveller():
       """
       return 0
 
+   # Since traveller implies 2d6 most of the time, the default string passed is the
+   # target, not the dice roll, and the dice modifier comes second.
    @classmethod
-   def roll(cls, dice=None, target=None, dm=None, debug=False):
+   def roll(cls, target=None, dm=None, dice=None, debug=False):
       if debug:
          print('roll(%s, %s, %s)' % (dice,target,dm))
       got = Rpggen.roll("2d6")

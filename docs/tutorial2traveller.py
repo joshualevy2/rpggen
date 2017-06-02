@@ -11,7 +11,20 @@
 #    * Using Templates
 #    * Selecting from Lists
 #
+
+
+# The python file Traveller contains data and functions which are general to 
+# the Traveller Role Playing Game.  The python file CepheusEngine includes
+# data and functions which are specific to the CepheusEngine version of 
+# Traveller.  CephenusEngine inherits from Traveller when the rules are the
+# same.  If you want to use ClassTraveler rules (from the LBBs), then you
+# should use the Traveller file instead of CepheusEngine, below:
+
 import sys
 sys.path.append('..')
-from Rpggen import Rpggen, Dice, Table, Template, Select
+from CepheusEngine import Career, Character
+from Traveller import Traveller
+
+# TODO: do we need that Traveller line above?
+
 

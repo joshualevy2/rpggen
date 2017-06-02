@@ -5,7 +5,7 @@ import re
 from Rpggen import Table, Rpggen
 from Traveller import Attribute, Career, Character, Traveller
 
-class CepheusEngine():
+class CepheusEngine(Traveller):
 
    def __init__(self):
       return
