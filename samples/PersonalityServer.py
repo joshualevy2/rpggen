@@ -1,17 +1,19 @@
 
-# Set this variable True for running on your local machine (it will use port 1188 and 
-# several debugging options), but False for production use on PythonAnywhere.com.
-import socket
-development = True
-if 'PythonAnywhere' in socket.getfqdn():
-   development = False
 
 from bottle import error, route, request, response, run, template, default_app
 import json
 import sys
 from yattag import Doc
 
+# Set this variable True for running on your local machine (it will use port 1188 and 
+# several debugging options), but False for production use on PythonAnywhere.com.
+# This only works because PythonAnywhere puts a path with a .local component in my
+# sys.path and none of my other development machines do that.
 
+development = True
+for p in sys.path:                                                                                      
+   if '.local' in p:
+      development = False
 
 if development:
    sys.path.append('..')
