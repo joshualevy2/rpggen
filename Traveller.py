@@ -261,9 +261,14 @@ class Character():
       if value is None:
          value = specific
          specific = None
+      exists = False   
       for skill in self.skills:
          if name == skill.name and specific == skill.specific:
             skill.value += value
+            exists = True
+      if not exists:
+         # TODO: doesn't support specific
+         self.skills.append(Attribute(name,value))
 
    def availableMoney(self):
       '''Returns the common amount of money (pocket+bank but not pension)'''
@@ -360,7 +365,7 @@ class Character():
       result += ('Money: %d in pocket, %d in bank, %d in pension\n' %
                  (self.money['pocket'], self.money['bank'], self.money['pension']))
       if len(self.possessions) > 0:
-         result += 'Possesions: %s\n' % ', '.join(self.ossessions)
+         result += 'Possesions: %s\n' % ', '.join(self.possessions)
       result += '\n'
       return result
 
