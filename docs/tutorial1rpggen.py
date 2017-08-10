@@ -26,17 +26,19 @@ from Rpggen import Rpggen, Dice, Table, Template, Select
 # Dice work the way that role players expect:
 
 # You can roll dice from Rpggen:
-print(Rpggen.use("3d6"))
+print('Rolling on 3d6: %s' % Rpggen.use("3d6"))
 # Or by using dice:
 dice = Dice("1d10+3")
-print(dice.roll())
+print('Rolling on 1d10+3: %s' % dice.roll())
+
+# Note that rolling dice currently returns a string.
 
 # Rule 1(b): All objects have a method called "use", which uses that object,
 # but many of the object also have a method called "roll" which does the same
 # thing.  Because sometimes it just feels better to sa "use" and other times it 
 # feels better to say "roll".
 
-print(dice.use())
+print('Rolling 1d10+3 again: %s' % dice.use())
 
 # Rpggen also supports Tables.
 # You can create tables in three different ways, and I'll go through each one
@@ -48,8 +50,8 @@ tab1 = Table('PlanetaryOcean', ['On Surface', 'Under A Thin Crust', 'Deep Underg
 tab2 = Table('Race', { '1-3': 'Human', '4-5': "Elf", '6': 'Dwarf'})
 
 # and you can use these tables in the obvious ways:
-print(tab1.use())
-print(tab2.roll())
+print('Using the PlanetaryOcean table: %s' % tab1.use())
+print('Using the Race table: %s' % tab2.roll())
 
 # Rule 2: many functions support a "debug=True" option.  If you pass that
 # option in, it will print out debugging information designed to help you
@@ -58,13 +60,14 @@ print(tab2.roll())
 # You can also do several other interesting things with tables:
 
 # Get a list of all possible results:
+# TBD
 
 # Set the dice that will be used, and get that later:
 
 tab3 = Table('Race', { 'roll': '2d4', 
              '2-5': 'Human', '6': "Elf", '7': 'Dwarf', '8': 'Halfling'})
-print(tab3.dice)
-print(tab3.results())
+print('Print the dice roll used in the second Race table: %s' % tab3.dice)
+print('And print out all possible results from that table: %s' % tab3.results())
 
 # A second way to create a table is by reading in an "lt" file.
 # This is a file formatting in the following way:
@@ -75,10 +78,10 @@ print(tab3.results())
 # First you read the file
 
 tab4 = Rpggen.loadLt('simple.lt')
-print('Just read in table %s, and use it once: %s' % (tab4.id, tab4.use()))
+print('Use the table in file simple.lt: %s' % tab4.use())
 
 # Why use an lt file?
-# **
+# TBD
 
 # A third way to create tables is by creating a json file which contains 
 # several tables, which are all loaded together.
@@ -116,20 +119,61 @@ print('')
 
 # But what if you want all roles to be unique?  Then you set the table to "unique":
 
-print('But **')
-tab3.unique(True)
-try:
-   for ii in range(10):
-      print(tab3.use()+' ', end='')
-except ValueError:
-   print('')
-   print('Caught a ValueError to signal all rows of the table have been used.')
+# TBD print('But **')
+# TBD tab3.unique(True)
+# TBD try:
+# TBD    for ii in range(10):
+# TBD       print(tab3.use()+' ', end='')
+# TBD except ValueError:
+# TBD    print('')
+# TBD    print('Caught a ValueError to signal all rows of the table have been used.')
 
 
 # **
 
-tab3.unique(False)
-print('Now you can get the same result over and over again:')
+# TBD tab3.unique(False)
+# TBD print('Now you can get the same result over and over again:')
+# TBD for ii in range(10):
+# TBD    print(tab3.use()+' ', end='')
+# TBD print('')
+
+# Now on to templates.
+
+# TBD
+
+# Finally, sometimes you just want to choose randomly from a list:
+
+res1 = Select.choose(['one','two','three','four'])
+print('Selected one string from four: %s' % res1)
+
+# And lastly, you often need to test your work!
+
+# To help you do that, if Rpggen.testData is set, then all dice will end up 
+# rolling that number, and all tables will return the same piece of data.
+
+Rpggen.testData = 6
+d6 = Dice('d6')
+print('With Rpggen.testData set to 6, 1d6 is always 6: ', end='')
 for ii in range(10):
-   print(tab3.use()+' ', end='')
+   print(str(d6.use())+' ', end='')
+print('')
+
+d62 = Dice('2d6')
+print('And 2d6 is always 12: ', end='')
+for ii in range(10):
+   print(str(d62.use())+' ', end='')
+print('')
+
+print('And a table will always react as though you rolled 6: ')
+for ii in range(10):
+   print(tab2.use()+' ', end='')
+print('')
+
+# And you can change the forced roll later (over and over, if you want to test
+# different situations).
+
+Rpggen.testData = 3
+print('Now Rpggen.testData is set to 3, so 1d6 is always 3: ', end='')
+for ii in range(10):
+   print(str(d6.use())+' ', end='')
 print('')
