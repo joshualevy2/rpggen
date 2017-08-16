@@ -26,12 +26,14 @@ class TestTableLt(unittest.TestCase):
    def test_removeFirstToken(self):
       tab = Rpggen.loadLt('../samples/PersonalityTraits100.lt')
       res1 = tab.use()
+      print(res1)
       self.assertEqual(res1,'Always Betray Rebel Scum')
       res2 = tab.use()
+      print(res2)
       self.assertEqual(res2,'Always Betray Rebel Scum')
       values = tab.results()
       #values.sort()
       self.assertEqual(len(values),100) 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == '__main__':  
+   unittest.main()

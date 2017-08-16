@@ -221,9 +221,9 @@ class Rpggen:
                     rows[k] = d[k]
             tab = Table(tableId, rows)
             if not 'unique' in d:
-               tab.unique = False
+               tab.setUnique(False)
             else:
-               tab.unique = d['unique']
+               tab.setUnique(d['unique'])
 
     @classmethod
     def loadLt(cls, filename):
@@ -262,8 +262,9 @@ class Rpggen:
           return cls.rollconcat(diceStr)   
        match = re.search(r'([0-9]+o)?([0-9]+)?([dDsS])([0-9]+)([-+][0-9]+)?',diceStr)
        if match == None:
-           raise ValueError('%s was not a dice roll' % diceStr)
-       logging.debug('%s -> %s-%s-%s-%s' % 
+          raise ValueError('%s was not a dice roll' % diceStr)
+       if debug:
+          print('%s -> %s-%s-%s-%s' % 
                      (diceStr, match.group(1),match.group(2),match.group(3),match.group(4)))
        if match.group(1) is not None:
           raise ValueError('No support for "o" dice type.')
@@ -290,6 +291,8 @@ class Rpggen:
               total += adjustment
            except:
               raise ValueError('Error in adjustment while rolling %s in the %s part.' % (diceStr, diceAdjustment))
+       if debug:
+          print('Rpggen.roll returns %d' % total)       
        return total
 
     @classmethod
@@ -317,7 +320,7 @@ class Rpggen:
        return json.dumps(obj, default=lambda o: o.__dict__, 
                      sort_keys=True, indent=4)
 
-    def unique(setting):
+    def setUnique(setting):
        self.unique = setting
        self.clear()
        
@@ -368,7 +371,7 @@ class Table:
       self.dice = None
       self.rows = []
       if not unique is None:
-         self.unique = unique
+         self.setUnique(unique)
       lineNum = 1
       if type(values) is list:
          self.dice = '1d%d' % len(values)
@@ -419,6 +422,10 @@ class Table:
          if row.result is None:
             logging.warning('Table %s has None as results.' % printName)
 
+   def clear(self):
+      for row in self.rows:
+        row.used = False
+
    @classmethod
    def names(cls):
        return ", ".join(Rpggen.tables.keys())
@@ -435,12 +442,25 @@ class Table:
    def rollRepeatedly(self, num, unique=True):
       return self.useRepeatedly(num, unique)
 
+   def smallStr(self):
+      results = []
+      for row in self.rows:
+         results.append(row.smallStr())
+      return results
+
+   def setUnique(self, value):
+      self.unique = value
+      if value:
+         self.clear()
+
    def use(self, partof=None, debug=False):
       self.internal_check()
       if debug:
-         print('Calling Table.use %s %s %d' % (self.id, self.dice, len(self.rows)))
-      roll = Rpggen.roll(self.dice)
+         print('Calling Table.use %s %s %d unique=%s' % (self.id, self.dice, len(self.rows), self.unique))
+      roll = Rpggen.roll(self.dice, debug=debug)
       for row in self.rows:
+         if debug:
+            print('%d %d-%d %s' % (roll, row.start, row.stop, (row.start <= roll <= row.stop)))
          if row.start <= roll <= row.stop:
             # If this row has been used, and the table is rolling uniquely (in general)
             # Then we cycle through the table to find any unused entry.
@@ -475,18 +495,12 @@ class Table:
       results = []
       wasunique = self.unique
       if unique:
-         self.clear()
-         self.unique = True
+         self.setUnique(True)
       for nn in range(num):
          results.append(self.use(partof=num))
-      if not wasunique and unique:
-         self.clear()
-      self.unique = wasunique
+      self.setUnique(wasunique)
       return results
 
-   def clear(self):
-      for row in self.rows:
-        row.used = False
 
 class Template:
    def __init__(self,name,template=None):

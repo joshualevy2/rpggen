@@ -42,6 +42,9 @@ class Character(Character):
          Character.skillTab = Table('skills', Character.skills)
       
    def createUpToCareer(self):
+      '''Creates a character up to their first career.
+         Just roll up basic attributes.
+      '''
       self.history.append('Birth')
       self.name = GetFromWeb.get('names')
       self.lastCareer = "No Career"
@@ -56,21 +59,23 @@ class Character(Character):
       self.history.append('At 18 has: %s' % self.strUpp())
 
    def createRandomlyTopdown(self):
-       self.history.append('--> Using Topdown randomly')
-       self.createUpToCareer()
-       self.terms = Rpggen.roll('1d7')
-       self.age = 18 + self.terms*4
-       self.lastCareer = 'Corporate Repo'
-       if self.terms == 1:
-           numSkills = 3
-       elif self.terms == 2:
-           numSkills = 5
-       else:
-           numSkills = (self.terms-1)*2 + Rpggen.roll('2d2')
-       for nSkill in range(numSkills):
-           skillLevel = Rpggen.roll('1d4-1')
-           skillName = Rpggen.finduse("skills")
-           self.skills.append(Attribute(skillName, skillLevel))
+      '''Very simple random character creator. 
+      '''
+      self.history.append('--> Using Topdown randomly')
+      self.createUpToCareer()
+      self.terms = Rpggen.roll('1d7')
+      self.age = 18 + self.terms*4
+      self.lastCareer = 'Corporate Repo'
+      if self.terms == 1:
+         numSkills = 3
+      elif self.terms == 2:
+         numSkills = 5
+      else:
+         numSkills = (self.terms-1)*2 + Rpggen.roll('2d2')
+      for nSkill in range(numSkills):
+         skillLevel = Rpggen.roll('1d4-1')
+         skillName = Rpggen.finduse("skills")
+         self.skills.append(Attribute(skillName, skillLevel))
 
    def changeStr(self, command):
       logging.debug('changeStr(%s)' % str(command))

@@ -462,7 +462,8 @@ class Traveller():
          if type(dice) == str:
             got = Rpggen.roll(dice)
 
-      logging.debug('raw roll %d' % got)
+      if debug:      
+         logging.debug('raw roll %d' % got)
       dmValue = 0
       if dm is not None:
        if type(dm) == int:

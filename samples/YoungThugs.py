@@ -1,9 +1,14 @@
 
+# This file contains to to generate "Young Thugs", who are 16-22 years old criminals.
+# In addition to doing something useful, it also serves as sample code to show you how
+# to generate and display characters using this library.
+#
+# It is heavily commented, and the comments are designed to teach you why things are
+# done the way they are done, and discuss options about other ways to do things.
+
 import logging
-import random
 import string
 import sys
-import unittest
 import json
 from yattag import Doc
 
