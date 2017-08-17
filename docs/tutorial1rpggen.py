@@ -35,7 +35,7 @@ print('Rolling on 1d10+3: %s' % dice.roll())
 
 # Rule 1(b): All objects have a method called "use", which uses that object,
 # but many of the object also have a method called "roll" which does the same
-# thing.  Because sometimes it just feels better to sa "use" and other times it 
+# thing.  Because sometimes it just feels better to say "use" and other times it 
 # feels better to say "roll".
 
 print('Rolling 1d10+3 again: %s' % dice.use())
@@ -45,7 +45,13 @@ print('Rolling 1d10+3 again: %s' % dice.use())
 # in turn, and the discuss which type of table you should use in which
 # situation.
 
+# This first example creates a table out of a list.  Each item in the list has the
+# same chance of being selected. 
+
 tab1 = Table('PlanetaryOcean', ['On Surface', 'Under A Thin Crust', 'Deep Underground'])
+
+# this second example creates a table out of a python dictionary.  The first element
+# is the roll, the second is the result for each "line" in the table.
 
 tab2 = Table('Race', { '1-3': 'Human', '4-5': "Elf", '6': 'Dwarf'})
 
@@ -60,7 +66,7 @@ print('Using the Race table: %s' % tab2.roll())
 # You can also do several other interesting things with tables:
 
 # Get a list of all possible results:
-# TBD
+print('Possible results for the first table: %s' % tab1.results())
 
 # Set the dice that will be used, and get that later:
 
@@ -69,10 +75,10 @@ tab3 = Table('Race', { 'roll': '2d4',
 print('Print the dice roll used in the second Race table: %s' % tab3.dice)
 print('And print out all possible results from that table: %s' % tab3.results())
 
-# A second way to create a table is by reading in an "lt" file.
+# Another way to create a table is by reading in an "lt" file.
 # This is a file formatting in the following way:
 # Lines that start with '#' are ignored.
-# Each other line is one result from the table.
+# Every other line is one result from the table.
 # Each result has an equal chance of occuring.
 
 # First you read the file
@@ -120,22 +126,22 @@ print('')
 # But what if you want all roles to be unique?  Then you set the table to "unique":
 
 # TBD print('But **')
-# TBD tab3.unique(True)
-# TBD try:
-# TBD    for ii in range(10):
-# TBD       print(tab3.use()+' ', end='')
-# TBD except ValueError:
-# TBD    print('')
-# TBD    print('Caught a ValueError to signal all rows of the table have been used.')
+tab3.setUnique(True)
+try:
+   for ii in range(10):
+      print(tab3.use()+' ', end='')
+except ValueError:
+   print('')
+   print('Caught a ValueError to signal all rows of the table have been used.')
 
 
 # **
 
-# TBD tab3.unique(False)
-# TBD print('Now you can get the same result over and over again:')
-# TBD for ii in range(10):
-# TBD    print(tab3.use()+' ', end='')
-# TBD print('')
+tab3.setUnique(False)
+print('Now you can get the same result over and over again:')
+for ii in range(10):
+   print(tab3.use()+' ', end='')
+print('')
 
 # Now on to templates.
 
