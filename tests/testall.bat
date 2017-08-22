@@ -6,8 +6,10 @@ python t_dice.py
 python t_money.py
 python t_select.py
 python t_Table.py
+python t_TableActions.py
 python t_TableFinduse.py
 python t_TableLt.py
+python t_TableUnique.py
 python t_template.py
 python t_profile.py
 python t_psi.py
