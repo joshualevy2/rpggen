@@ -438,6 +438,10 @@ class Profile():
 
 class Traveller():
 
+   majorRaces = [ 'Vlandi', 'Solomani', 'Vargr', 'Aslan']
+   minorRaces = [ 'Hhakr', 'Vegan']
+   races = majorRaces + minorRaces
+
    customziations = {}
    Rpggen.setCustomization('d66support',True)
 
