@@ -29,6 +29,8 @@ class TestTableActions(unittest.TestCase):
       results = self.tab1.results()
       results.sort()
       self.assertEqual(results,['four','one','three','two'])
+
+   # todo: repeat for all other tables   
        
 
 if __name__ == '__main__':

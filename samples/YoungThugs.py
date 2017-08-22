@@ -21,7 +21,7 @@ from Traveller import Attribute, Traveller
 # TODO Why not CepheusEngine.Character?
 class YoungThug(Character):
    # Updated when improvements are made to the generation algorithm.
-   version = '0.1'
+   version = '0.2'
 
    # Tables are class variables, not object variables, so that when we print out the YoungThug
    # class as a json string, we do NOT include these tables.
@@ -41,12 +41,28 @@ class YoungThug(Character):
    # This is a very generic table, which should be overwritten by a better one in the
    # setting table
    possessionsTable = Table('PossessionsTable',
-                            ['Key', 'Legal Drugs', 'Illegal Drugs', 'Gambling Materials',
-                             'Gear Bag', 'Shades', 'Broken Jewlery', 
+                            ['{{use("PossessionsTableRare")}}', 'Anti-Laser Aerosol',
+                             'Body Armor', 'Key', 'Legal Drugs',
+                             'Drug Paraphenella', 
+                             'Illegal Drugs', 'Gambling Materials', 'Gear Bag',   
                              'Forgerly or Lockpicking Equipment', 'Jumk Food',
-                             'Gloves', 'Flask', 'Photo', 'Torn Up Photo', 'Mints',
-                             'Plastic Tie','Bandage(s) or BandAid(s)', 'Sanitizer',
+                             'Gloves', 'Flask', 'Photo', 'Recording Equipment', 'Shades',
+                             'Sanitizer', 'Survellience Gear',
+                             'Torn Up Photo', 'Mints',                        
                              'Lip Balm or Handcream'])
+   possessionsTableRare = Table('PossessionsTableRare',
+                                ['Broken Jewlery', 'Bandage(s) or BandAid(s)', 
+                                 'Plastic Tie'],
+                                unique=True)
+
+   looksTable = Table('Looks',
+                 { 'roll': '1d12',
+                   '1': 'Cosmetic Surgery', '2': 'Cyborg Enhasement (Obvious)', 
+                   '3': 'Body Piercing', '4': 'Jewlery', '5': 'Tatoos', 
+                   '6': 'Unusual Clothing', 
+                   '7': 'Unusual Hair',
+                   '8-12': 'Nothing Unusual'})
+
    personalityTable = Rpggen.loadLt("PersonalityTraits.lt") 
 
    def __init__(self):
@@ -163,6 +179,7 @@ class YoungThug(Character):
             num = Rpggen.roll('2d2')
          self.possessions = Rpggen.find('PossessionsTable').rollRepeatedly(num)
 
+      self.looks = self.looksTable.roll()
 
       # Add some events
 
@@ -208,6 +225,8 @@ class YoungThug(Character):
        text('Money: %d in pocket, %d in bank, %d in pension' %
                   (self.money['pocket'], self.money['bank'], self.money['pension']))
        doc.asis('<br>')
+       text('Looks: %s' % self.looks)
+       doc.asis('<br>')       
        #with tag('ol'):
        #   for history in self.history:
        #      with tag('li'):
