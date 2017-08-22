@@ -125,7 +125,7 @@ class Career():
                               (cashBenefits, materialBenefits))
      for num in range(cashBenefits):
         benefit = Rpggen.finduse('CashBenefits')
-        character.money['bank'] += int(benefit)
+        character.money['bank'] += Traveller.str2cr(benefit)
         character.history.append(benefit)
      for num in range(materialBenefits):
         benefit = Rpggen.finduse('MaterialBenefits')
@@ -135,18 +135,19 @@ class Career():
            character.possessions.append(benefit)
         character.history.append(benefit)
 
-   def doOneTerm(self, character):
+   def doOneTerm(self, character, debug=False):
       '''Adds one term to a character.
          Returns None if the career continues, or a string if the career
          ends, the string stating why the career ends.
       '''
-      logging.debug('entering doOneTerm')
+      if debug:
+         print('entering doOneTerm')
       character.history.append('Starting a new term.')
       if character.terms == 7:
          result = 'Aged out of career.'
          character.history.append(result)
          return result
-      if character.checkStr(self.config['survival']):
+      if not character.checkStr(self.config['survival']):
          result = 'Did not survive.'
          character.history.append(result)
          return result
@@ -289,7 +290,7 @@ class Character():
       self.edu = Rpggen.roll('2d6')
       self.soc = Rpggen.roll('2d6')
 
-   def createUsingTimeline(self, career=None):
+   def createUsingTimeline(self, career=None, debug=False):
       # Do all the pre-career character generation steps.
 
       if career is None:
@@ -303,7 +304,7 @@ class Character():
 
       endReason = None 
       while endReason is None:
-         endReason = career.doOneTerm(self)
+         endReason = career.doOneTerm(self, debug=False)
 
       self.endReason = endReason
       self.history.append(endReason)
@@ -332,8 +333,13 @@ class Character():
             return skill
       return None
 
-   def roll(self, attr, target):
-      return Traveller.roll(target=target, dm=self.dm(attr))
+   def roll(self, attr, target, debug=False):
+      dm = self.dm(attr)
+      result = Traveller.roll(target=target, dm=dm)
+      if debug:
+         print('in Character roll: attr=%s target=%s dm=%s' %
+               (attr, target, dm))
+      return result
 
    def skillNames(self):
       skillNames = []
@@ -448,6 +454,20 @@ class Traveller():
       """
       """
       return 0
+
+   @classmethod
+   def iscr(cls, str):
+      try:
+         match = re.search(r"^(\$|[Cc][Rr] ?)?([0123456789]+)$", str)
+         result = int(match.group(2))
+         return True
+      except:
+         return False         
+
+   @classmethod
+   def str2cr(cls, str):
+      match = re.search(r"^(\$|[Cc][Rr] ?)?([0123456789]+)$", str)
+      return int(match.group(2))   
 
    # Since traveller implies 2d6 most of the time, the default string passed is the
    # target, not the dice roll, and the dice modifier comes second.
