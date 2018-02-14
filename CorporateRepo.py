@@ -16,28 +16,28 @@ class CorporateRepo(Career):
              'advancement': 'Int 6+',
              'reenlistment': '5+'})
       self.addData('Ranks',
-      	          ['Crew/Agent', 'Lead', 'Manager','Sr.Manager','Director',
-      	           'Sr.Director','Executive'])
+      	          ['Crew', 'Specialist', 'Agent', 'Lead', 'Manager','Director',
+      	           'Executive'])
       self.addData('Skills',
       	          ['Streetwise', None, 'GunCombat', None, None, None, None])     
       self.addTable(Table('MaterialBenefits',
-      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
+      	                  ['Weapon', 'Explorer\' Society', 'Weapon', 'Mid Passage',
+                           'High Passage', 'High Passage or Starship']))
       self.addTable(Table('CashBenefits',
-      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))      	                 
+      	                  ['cr2000', 'cr10000', 'cr10000', 'cr10000', 'cr20000', 'cr40000',
+                           'cr100000']))      	                 
       self.addTable(Table('PersonalDevelopment',
-      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat','+1 Edu','Athletics']))
+      	                  ['+1 Str', '+1 Dex', '+1 End','MeleeCombat',
+                           'Vehicle','Athletics']))
       self.addTable(Table('ServiceDevelopment',
-      	                  ['Streetwise', 'Engineering', 'Bribery','Liaison','Recon','Mechanics']))
+      	                  ['Streetwise', 'Engineering', 'Bribery', 'Liaison',
+                           'Recon', 'Mechanics']))
       self.addTable(Table('SpecialistDevelopment',
-      	                  ['Zero-G', 'Comms', 'Admin','Electronics','Leadership','Jack-o-Trades']))
+      	                  ['Zero-G', 'Comms', 'Admin', 'Tactics', 'Leadership',
+                           'Jack-o-Trades']))
       self.addTable(Table('AdvancedDevelopment',
-      	                  ['Computer', 'Gravitics', 'Piloting','Medicine?','Advocate','Tactics?']))
-      self.addTable(Table('MaterialBenefits',
-                          ['Low Passage', 'Explorer’ Society', 'Weapon', 'Mid  Passage', 
-                           '+1 Soc', 'Starship', 'High Passage']))
-      self.addTable(Table('CashBenefits',
-                          ['1000', '5000', '10000', '20000', '20000', '50000', '100000']))
-  
+      	                  ['Computer', 'Gravitics', 'Piloting', 'Navigation',
+                           'Advocate', 'Electronics']))
 
    def qualified(self,character):
    	qual = self.config['qualifications']

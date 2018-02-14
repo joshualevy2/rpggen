@@ -58,3 +58,5 @@ print("Roll 4 dice (always d6 in Traveller) %s" % Traveller.roll(dice=4))
 
 # remember, you can always pass in debug=True to see more about what is happening
 print("Roll 8+ on 2 dice %s" % Traveller.roll(target='8+', debug=True))
+
+#

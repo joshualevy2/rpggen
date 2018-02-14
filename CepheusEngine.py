@@ -77,14 +77,13 @@ class Character(Character):
          skillName = Rpggen.finduse("skills")
          self.skills.append(Attribute(skillName, skillLevel))
 
-   def changeStr(self, command):
-      logging.debug('changeStr(%s)' % str(command))
-      self.history.append(command)
+   def changeStr(self, command, debug=False):
+      self.history.append('Adding %s' % command)
       if type(command) == list:
          raise ValueError('For changeCharacter, command can not be a list (yet).')
       parts = command.split(' ')
       logging.debug('In changeStr: %s' % "|".join(parts))
-      if len(parts) == 1:
+      if len(parts) == 1 and not Traveller.iscr(parts[0]):
          self.change(('skill', parts[0], 'add', '1')) 
       elif len(parts) ==2:
          # ''+1 Dex' -> 'attr, dex, add 1'
@@ -92,7 +91,7 @@ class Character(Character):
             self.change(('attr', parts[1], 'add', str(parts[0])))
 
          # '10' , '$10', 'cr10' -> money onhand add 10
-         if parts[1][0] == '$' or parts[1][0:1].lower() == "cr":
+         if parts[1].startswith('$') == '$' or re.match('[Cc][Rr]',parts[1]):
             self.change(('money', parts[1], 'add', str(parts[0])))
 
                        
@@ -137,13 +136,16 @@ class Character(Character):
          else:
            print('Could not change %s for %s' % (command,self.name))
 
-   def checkStr(self,command):
+   def checkStr(self, command, debug=False):
       '''This function implmenents attribute checks on a character.
          Sample call: character.checkStr('int 8+')
          TODO: In the future, it will do skills as well.
       '''
       parsed = command.split(' ')
-      result = Traveller.roll(dm=Traveller.dm(parsed[0]), target=parsed[1]) 
+      result = self.roll(attr=parsed[0], target=parsed[1], debug=debug) 
+      if debug:
+         print('in checkStr(%s): attr=%s target=%s  result was %s' % 
+               (command,parsed[0], parsed[1],result))
       return result
 
    def doBasicTraining(self, character):

@@ -56,6 +56,8 @@ class YoungThug(Character):
                                 unique=True)
 
    looksTable = Table('Looks',
+
+    
                  { 'roll': '1d12',
                    '1': 'Cosmetic Surgery', '2': 'Cyborg Enhasement (Obvious)', 
                    '3': 'Body Piercing', '4': 'Jewlery', '5': 'Tatoos', 

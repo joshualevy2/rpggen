@@ -130,11 +130,23 @@ class Rpggen:
 
     @classmethod
     def find(cls, name, debug=False):
-        #print("finduse: "+name)    
-        try:
+       #print("finduse: "+name)   
+       if type(name) is list:
+          longname = ''.join(name)
+          tab = cls.tables[name]
+          if tab is None:
+             if len(name) == 1:
+                return cls.find(name,debug)
+             else:
+                return cls.find(name[:-1],debug)   
+             return find 
+          pass
+       else:
+          # It's a string, the normal case
+          try:
            tab = cls.tables[name]
            return tab 
-        except:   
+          except:   
            if debug:
               print(Table.names())
               print("ERROR: Could not find a table or template named "+name+" and it doesn't look like a dice roll.\n")
@@ -145,7 +157,9 @@ class Rpggen:
         if debug:
            print('Calling Rpggen.finduse(%s)' % name)  
         try:
-           tab = cls.tables[name]
+           tab = cls.find(name,debug)
+           if tab is None:
+              raise KeyError
            return tab.use(debug=debug)  
         except KeyError:
            if debug:
@@ -237,13 +251,19 @@ class Rpggen:
           content = file.readlines()
        for line in content:
           line = line.strip()
-          if not line[0] == '#':
+          if len(line) == 0:
+             # Blank lines are ignored
+             pass
+          elif not line[0] == '#':
+             # Most lines become entries in the table.
              if removeFirstToken:
                 # Cuts off the first token (whitespace seperated) from line. Keeps the rest.
                 entries.append(line.split(None, 1)[1])
              else:
                 entries.append(line)
           else:
+             # Lines that start with a # are comments, so mostly ignored, but some
+             # are special controls.            
              if 'RemoveFirstToken' in line:
                 removeFirstToken = True
              if 'Name' in line:
